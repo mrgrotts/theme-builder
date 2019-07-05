@@ -5,11 +5,10 @@ import styled from 'styled-components';
 
 import DeleteDialog from '../components/DeleteDialog';
 import Layout from '../components/Layout';
-import NavBar from '../components/NavBar';
 import PaletteCard from '../components/PaletteCard';
 
 import { DialogState, CurrentDialogState } from '../hooks';
-import { Button, List, Main, MobileFirstMediaQuery, PaletteListColumns } from '../theme';
+import { Button, List, Main, MobileFirstMediaQuery, Nav, PaletteListColumns } from '../theme';
 import { THEME } from '../constants';
 const { TRANSITION_ALL } = THEME;
 
@@ -79,14 +78,14 @@ const PaletteList = ({ deletePalette, history, palettes }) => {
 
   return (
     <Layout>
-      <NavBar id={'palette-list'} style={{ justifyContent: 'space-around' }}>
+      <Nav id={'palette-list'} style={{ justifyContent: 'space-around' }}>
         <NavBarTitle>Your Palettes</NavBarTitle>
         <Link to={`/palettes/new`}>
           <NewPaletteButton color={`#141414`} size={'medium'}>
             NEW PALETTE
           </NewPaletteButton>
         </Link>
-      </NavBar>
+      </Nav>
       <Main>
         <List columns={PaletteListColumns}>
           <TransitionGroup component={null}>{renderPalettes()}</TransitionGroup>

@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import BackBox from '../components/BackBox';
 import ColorBox from '../components/ColorBox';
 import Layout from '../components/Layout';
-import NavBar from '../components/NavBar';
 import PaletteToolBar from '../components/PaletteToolBar';
 
-import { Main, MobileFirstMediaQuery, PaletteColumns } from '../theme';
+import { FormatState, SnackbarState } from '../hooks';
+import { Main, MobileFirstMediaQuery, Nav, PaletteColumns } from '../theme';
 
 const Color = styled.section.attrs(props => ({
   'aria-colcount': PaletteColumns,
@@ -16,7 +16,7 @@ const Color = styled.section.attrs(props => ({
   height: 100%;
 `;
 
-const NavBarTitle = styled.h1.attrs(props => ({
+const NavTitle = styled.h1.attrs(props => ({
   role: 'heading'
 }))`
   color: #141414;
@@ -29,25 +29,29 @@ const NavBarTitle = styled.h1.attrs(props => ({
   }
 `;
 
-class PaletteColor extends Component {
-  state = {
-    format: 'hex',
-    open: false
+const PaletteColor = ({ history, match, palette }) => {
+  const [format, onChangeFormat] = FormatState('hex');
+  const [open, onOpen] = SnackbarState(false);
+
+  const onChange = (event, reason) => {
+    onChangeFormat(event.target.value);
+
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    onOpen(true);
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const formatUnchanged = this.state.format === nextState.format;
-    const openToggled = this.state.open !== nextState.open;
-
-    if (formatUnchanged && openToggled) {
-      return false;
-    } else {
-      return true;
+  const onClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
     }
-  }
 
-  getShades = () => {
-    const { match, palette } = this.props;
+    onOpen(false);
+  };
+
+  const getShades = () => {
     let shades = [];
 
     for (let key in palette.colors) {
@@ -57,14 +61,10 @@ class PaletteColor extends Component {
     return shades.slice(1);
   };
 
-  onChangeFormat = event => this.setState({ format: event.target.value, open: true });
-
-  onToggleOpen = () => this.setState({ open: false });
-
-  renderColors = () => {
+  const renderColors = () => {
     let colindex = 0;
-    const backBoxId = `${this.props.palette.paletteName.toLowerCase().replace(/ /g, '-')}-back`;
-    const shades = this.getShades();
+    const backBoxId = `${palette.paletteName.toLowerCase().replace(/ /g, '-')}-back`;
+    const shades = getShades();
 
     const colors = shades.map(shade => {
       if (colindex === PaletteColumns) {
@@ -78,7 +78,7 @@ class PaletteColor extends Component {
           key={shade.name}
           boxId={shade.name.toLowerCase().replace(/ /g, '-')}
           colindex={colindex}
-          color={shade[this.state.format]}
+          color={shade[format]}
           name={shade.name}
           type={'shade'}
         />
@@ -90,7 +90,7 @@ class PaletteColor extends Component {
         key={backBoxId}
         boxId={backBoxId}
         colindex={colindex}
-        onBack={() => this.props.history.goBack()}
+        onBack={() => history.goBack()}
         type={'back'}
       />
     );
@@ -99,34 +99,125 @@ class PaletteColor extends Component {
     return colors;
   };
 
-  render() {
-    const { format, open } = this.state;
-    const { match, palette } = this.props;
+  const { emoji, paletteName } = palette;
+  const paletteColor = match.params.color.charAt(0).toUpperCase() + match.params.color.slice(1);
 
-    const { emoji, paletteName } = palette;
-    const paletteColor = match.params.color.charAt(0).toUpperCase() + match.params.color.slice(1);
+  return (
+    <Layout emoji={emoji} paletteName={paletteName}>
+      <Nav style={{ padding: '1rem' }}>
+        <NavTitle>
+          {paletteName}: {paletteColor}
+        </NavTitle>
+        <PaletteToolBar format={format} open={open} onChange={onChange} onClose={onClose} />
+      </Nav>
+      <Main>
+        <Color id={match.params.color} style={{ margin: '0' }}>
+          {renderColors()}
+        </Color>
+      </Main>
+    </Layout>
+  );
+};
 
-    return (
-      <Layout emoji={emoji} paletteName={paletteName}>
-        <NavBar style={{ padding: '1rem' }}>
-          <NavBarTitle>
-            {paletteName}: {paletteColor}
-          </NavBarTitle>
-          <PaletteToolBar
-            format={format}
-            open={open}
-            onChangeFormat={this.onChangeFormat}
-            onToggleOpen={this.onToggleOpen}
-          />
-        </NavBar>
-        <Main>
-          <Color id={match.params.color} style={{ margin: '0' }}>
-            {this.renderColors()}
-          </Color>
-        </Main>
-      </Layout>
-    );
-  }
-}
+// class PaletteColor extends Component {
+//   state = {
+//     format: 'hex',
+//     open: false
+//   };
+
+//   shouldComponentUpdate(nextProps, nextState) {
+//     const formatUnchanged = this.state.format === nextState.format;
+//     const openToggled = this.state.open !== nextState.open;
+
+//     if (formatUnchanged && openToggled) {
+//       return false;
+//     } else {
+//       return true;
+//     }
+//   }
+
+//   getShades = () => {
+//     const { match, palette } = this.props;
+//     let shades = [];
+
+//     for (let key in palette.colors) {
+//       shades.push(palette.colors[key].find(color => color.id === match.params.color));
+//     }
+
+//     return shades.slice(1);
+//   };
+
+//   onChangeFormat = event => this.setState({ format: event.target.value, open: true });
+
+//   onToggleOpen = () => this.setState({ open: false });
+
+//   renderColors = () => {
+//     let colindex = 0;
+//     const backBoxId = `${this.props.palette.paletteName.toLowerCase().replace(/ /g, '-')}-back`;
+//     const shades = this.getShades();
+
+//     const colors = shades.map(shade => {
+//       if (colindex === PaletteColumns) {
+//         colindex = 1;
+//       } else {
+//         colindex++;
+//       }
+
+//       return (
+//         <ColorBox
+//           key={shade.name}
+//           boxId={shade.name.toLowerCase().replace(/ /g, '-')}
+//           colindex={colindex}
+//           color={shade[this.state.format]}
+//           name={shade.name}
+//           type={'shade'}
+//         />
+//       );
+//     });
+
+//     const back = (
+//       <BackBox
+//         key={backBoxId}
+//         boxId={backBoxId}
+//         colindex={colindex}
+//         onBack={() => this.props.history.goBack()}
+//         type={'back'}
+//       />
+//     );
+
+//     colors.push(back);
+//     return colors;
+//   };
+
+//   render() {
+//     const { format, open } = this.state;
+//     const { match, palette } = this.props;
+//     console.log(open);
+
+//     const { emoji, paletteName } = palette;
+//     const paletteColor = match.params.color.charAt(0).toUpperCase() + match.params.color.slice(1);
+
+//     return (
+//       <Layout emoji={emoji} paletteName={paletteName}>
+//         <Nav style={{ padding: '1rem' }}>
+//           <NavTitle>
+//             {paletteName}: {paletteColor}
+//           </NavTitle>
+//           <PaletteToolBar
+//             format={format}
+//             open={open}
+//             onChangeFormat={this.onChangeFormat}
+//             onToggleOpen={this.onToggleOpen}
+//           />
+//         </Nav>
+//         <Main>
+//           <Color id={match.params.color} style={{ margin: '0' }}>
+//             {this.renderColors()}
+//           </Color>
+//         </Main>
+//       </Layout>
+//     );
+//   }
+// }
 
 export default PaletteColor;

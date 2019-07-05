@@ -16,11 +16,10 @@ import Draggable from '../hoc/Draggable';
 import ColorPicker from '../components/ColorPicker';
 import DraggableBox from '../components/DraggableBox';
 import Layout from '../components/Layout';
-import NavBar from '../components/NavBar';
 import PaletteFormToolBar from '../components/PaletteFormToolBar';
 
 import { DRAWER_WIDTH } from '../constants';
-import { Main, MobileFirstMediaQuery, PaletteColumns, Typography } from '../theme';
+import { Main, MobileFirstMediaQuery, Nav, PaletteColumns, Typography } from '../theme';
 import { randomColor, seedPalettes } from '../utils';
 
 const screenWidth = window.innerWidth < DRAWER_WIDTH ? window.innerWidth : DRAWER_WIDTH;
@@ -231,7 +230,7 @@ class PaletteForm extends Component {
     return (
       <Layout id={'new-palette'}>
         <CssBaseline />
-        <NavBar id={'new-palette'}>
+        <Nav id={'new-palette'}>
           <PaletteFormToolBar
             open={open}
             palettes={palettes}
@@ -239,7 +238,7 @@ class PaletteForm extends Component {
             onDrawerOpen={this.onDrawerOpen}
           />
           <div className={classes.drawerHeader} />
-        </NavBar>
+        </Nav>
         <Main>
           <div className={classes.root}>
             {drawer}
