@@ -13,6 +13,7 @@ html {
   box-sizing: border-box;
   overflow-x: hidden;
 }
+
 /* 
 body, #root {
   height: 100%;
@@ -22,6 +23,7 @@ body {
   background: rgb(247, 247, 247);
   margin: 0;
   padding: 0;
+  /* This is an override of Material-UI's Dialog Component behavior. */
   overflow: visible !important;
 }
 
