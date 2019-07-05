@@ -10,6 +10,8 @@ import PaletteCard from '../components/PaletteCard';
 
 import { DialogState, CurrentDialogState } from '../hooks';
 import { Button, List, Main, MobileFirstMediaQuery, PaletteListColumns } from '../theme';
+import { THEME } from '../constants';
+const { TRANSITION_ALL } = THEME;
 
 const NewPaletteButton = styled(Button)`
   :active,
@@ -17,7 +19,7 @@ const NewPaletteButton = styled(Button)`
   :hover {
     background: rgba(247, 247, 247);
     color: #141414;
-    transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    ${TRANSITION_ALL};
   }
 `;
 

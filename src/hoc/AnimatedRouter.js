@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 const AnimatedComponent = styled.div`
   position: relative;
+  z-index: 1;
 `;
 
 const Page = styled.div`

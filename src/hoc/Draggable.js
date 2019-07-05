@@ -15,8 +15,8 @@ const Draggable = SortableContainer(
       {children.map((child, index) => (
         <DraggableElement
           key={child.key}
-          index={child.props.index || index}
           element={child}
+          index={child.props.index || index}
           {...rest}
         />
       ))}
