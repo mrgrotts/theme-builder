@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
 import AnimatedRouter from './hoc/AnimatedRouter';
 import Palette from './pages/Palette';
@@ -32,47 +32,43 @@ class App extends Component {
 
   render() {
     let { palettes } = this.state;
-    let { location } = this.props;
-    console.log(this.props);
 
     const defaultPalette = generatePalette(palettes[4]);
 
     return (
       <AnimatedRouter>
-        <Switch location={location}>
-          <Route
-            exact
-            path={`/`}
-            render={props => (
-              <PaletteList palettes={palettes} deletePalette={this.deletePalette} {...props} />
-            )}
-          />
-          <Route
-            exact
-            path={`/palettes/new`}
-            render={props => (
-              <PaletteForm palettes={palettes} savePalette={this.savePalette} {...props} />
-            )}
-          />
-          <Route
-            exact
-            path={`/palettes/:palette`}
-            render={props => (
-              <Palette
-                defaultPalette={defaultPalette}
-                palette={this.getPalette(props.match.params.palette)}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            exact
-            path={`/palettes/:palette/colors/:color`}
-            render={props => (
-              <PaletteColor palette={this.getPalette(props.match.params.palette)} {...props} />
-            )}
-          />
-        </Switch>
+        <Route
+          exact
+          path={`/`}
+          render={props => (
+            <PaletteList palettes={palettes} deletePalette={this.deletePalette} {...props} />
+          )}
+        />
+        <Route
+          exact
+          path={`/palettes/new`}
+          render={props => (
+            <PaletteForm palettes={palettes} savePalette={this.savePalette} {...props} />
+          )}
+        />
+        <Route
+          exact
+          path={`/palettes/:palette`}
+          render={props => (
+            <Palette
+              defaultPalette={defaultPalette}
+              palette={this.getPalette(props.match.params.palette)}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          exact
+          path={`/palettes/:palette/colors/:color`}
+          render={props => (
+            <PaletteColor palette={this.getPalette(props.match.params.palette)} {...props} />
+          )}
+        />
       </AnimatedRouter>
     );
   }
