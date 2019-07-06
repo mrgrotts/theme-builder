@@ -29,13 +29,13 @@ class App extends Component {
 
   updatePalette = (paletteId, color) => {
     let palettes;
-    for (let p in this.state.palettes) {
-      if (this.state.palettes[p].id === paletteId) {
+    for (let palette in this.state.palettes) {
+      if (this.state.palettes[palette].id === paletteId) {
         palettes = {
           ...this.state.palettes,
-          [p]: {
-            ...this.state.palettes[p],
-            colors: this.state.palettes[p].colors.map(col =>
+          [palette]: {
+            ...this.state.palettes[palette],
+            colors: this.state.palettes[palette].colors.map(col =>
               col.name.toLowerCase() === color.id.toLowerCase()
                 ? { name: color.name, color: color.hex }
                 : col
