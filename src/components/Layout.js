@@ -1,7 +1,8 @@
 import React from 'react';
 
+import FooterContent from './FooterContent';
 import Logo from './Logo';
-import PaletteName from './PaletteName';
+
 import { Grid, Footer, Header } from '../theme';
 
 const Layout = ({ children, emoji, id, paletteName }) => (
@@ -11,8 +12,7 @@ const Layout = ({ children, emoji, id, paletteName }) => (
     </Header>
     {children}
     <Footer>
-      {(emoji && paletteName && <PaletteName emoji={emoji} name={paletteName} />) ||
-        `Eventually A Better Footer...`}
+      <FooterContent emoji={emoji} paletteName={paletteName} />
     </Footer>
   </Grid>
 );

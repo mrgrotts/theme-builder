@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { MobileFirstMediaQuery } from '../theme';
+import { MobileFirstMediaQuery } from '../queries';
 
 // const ThemedOption = styled.span`
 //   height: auto;
@@ -29,7 +29,7 @@ const ThemedSelect = styled.select`
   }
 `;
 
-const Select = ({ className, color, field, onChange, style }) => {
+export const Select = ({ className, color, field, onChange, style }) => {
   const options = field.options.map(({ name, value }) => (
     <option key={value} value={value}>
       {name}
@@ -54,5 +54,3 @@ const Select = ({ className, color, field, onChange, style }) => {
     </fieldset>
   );
 };
-
-export default Select;

@@ -1,11 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import PaletteToolBar from '../components/PaletteToolBar';
 import ColorBox from '../components/ColorBox';
+import ColorDetailsModal from '../components/ColorDetailsModal';
 import Layout from '../components/Layout';
+import PaletteToolBar from '../components/PaletteToolBar';
 
-import { FormatState, LevelState, SnackbarState } from '../hooks';
+import { CurrentDialogState, FormatState, LevelState, SnackbarState } from '../hooks';
 import { Main, MobileFirstMediaQuery, Nav, PaletteColumns } from '../theme';
 
 const NavBarTitle = styled.h1.attrs(props => ({
@@ -30,10 +31,9 @@ const PaletteColors = styled.section.attrs(props => ({
   min-height: 100%;
 `;
 
-const Palette = ({ defaultPalette, palette }) => {
-  if (!palette) {
-    palette = defaultPalette;
-  }
+const Palette = ({ palette, updatePalette }) => {
+  const [current, onCurrentDialog] = CurrentDialogState(null);
+  // const [open, onToggleDialog] = DialogState(false);
 
   const [format, onChangeFormat] = FormatState('hex');
   const [level, onChangeLevel] = LevelState(500);
@@ -49,11 +49,30 @@ const Palette = ({ defaultPalette, palette }) => {
     onOpen(true);
   };
 
-  const onClose = (event, reason) => {
+  const onClick = (event, reason, color) => {
     if (reason === 'clickaway') {
       return;
     }
 
+    onOpen(true);
+    onCurrentDialog(color);
+  };
+
+  const onClose = (event, reason) => {
+    console.log('fired onClose: ', event, reason);
+    if (reason === 'clickaway' || reason === 'timeout') {
+      return;
+    }
+
+    onOpen(false);
+  };
+
+  const onSave = (event, value) => {
+    console.log('fired onSave: ', value, current);
+    let color = current;
+    color.name = value;
+    console.log('saving: ', color);
+    updatePalette(palette.id, color);
     onOpen(false);
   };
 
@@ -75,6 +94,8 @@ const Palette = ({ defaultPalette, palette }) => {
         color={color[format]}
         id={color.id}
         name={color.name}
+        onClick={(event, reason) => onClick(event, reason, color)}
+        onSave={onSave}
         to={`/palettes/${palette.id}/colors/${color.id}`}
         type={'palette'}
       />
@@ -99,6 +120,13 @@ const Palette = ({ defaultPalette, palette }) => {
       <Main>
         <PaletteColors id={id}>{colorBoxes}</PaletteColors>
       </Main>
+      <ColorDetailsModal
+        color={current}
+        onClose={onClose}
+        onSave={onSave}
+        open={open}
+        to={current && `/palettes/${palette.id}/colors/${current.id}`}
+      />
     </Layout>
   );
 };

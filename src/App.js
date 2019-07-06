@@ -27,6 +27,29 @@ class App extends Component {
       this.syncLocalStorage
     );
 
+  updatePalette = (paletteId, color) => {
+    let palettes;
+    for (let p in this.state.palettes) {
+      if (this.state.palettes[p].id === paletteId) {
+        palettes = {
+          ...this.state.palettes,
+          [p]: {
+            ...this.state.palettes[p],
+            colors: this.state.palettes[p].colors.map(col =>
+              col.name.toLowerCase() === color.id.toLowerCase()
+                ? { name: color.name, color: color.hex }
+                : col
+            )
+          }
+        };
+
+        return palettes;
+      }
+    }
+
+    this.setState({ palettes }, this.syncLocalStorage);
+  };
+
   syncLocalStorage = () =>
     window.localStorage.setItem('palettes', JSON.stringify(this.state.palettes));
 
@@ -56,8 +79,8 @@ class App extends Component {
           path={`/palettes/:palette`}
           render={props => (
             <Palette
-              defaultPalette={defaultPalette}
-              palette={this.getPalette(props.match.params.palette)}
+              palette={this.getPalette(props.match.params.palette) || defaultPalette}
+              updatePalette={this.updatePalette}
               {...props}
             />
           )}

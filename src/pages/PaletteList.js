@@ -38,7 +38,7 @@ const PaletteList = ({ deletePalette, history, palettes }) => {
   const [open, onToggleDialog] = DialogState(false);
   const [current, onCurrentDialog] = CurrentDialogState(null);
 
-  const onToggle = () => onToggleDialog(!open);
+  const onToggle = () => onToggleDialog();
 
   const onDelete = (event, id) => {
     event.stopPropagation();

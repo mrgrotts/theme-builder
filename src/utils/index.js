@@ -1,3 +1,4 @@
+export * from './combineReducers';
 export * from './copyToClipboard';
 export * from './generatePalette';
 export * from './randomColor';

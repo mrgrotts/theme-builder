@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import BackBox from '../components/BackBox';
-import ColorBox from '../components/ColorBox';
+import CopyColorBox from '../components/CopyColorBox';
 import Layout from '../components/Layout';
 import PaletteToolBar from '../components/PaletteToolBar';
 
@@ -74,7 +74,7 @@ const PaletteColor = ({ history, match, palette }) => {
       }
 
       return (
-        <ColorBox
+        <CopyColorBox
           key={shade.name}
           boxId={shade.name.toLowerCase().replace(/ /g, '-')}
           colindex={colindex}

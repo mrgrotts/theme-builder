@@ -2,8 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Slider from './Slider';
-import Select from './Select';
-import { MaterialSnackbar as Snackbar, MobileFirstMediaQuery } from '../theme';
+import { Select, MaterialSnackbar as Snackbar, MobileFirstMediaQuery } from '../theme';
 
 const Toolbar = styled.div`
   align-items: center;

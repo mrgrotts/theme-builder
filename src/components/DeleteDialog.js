@@ -12,8 +12,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import red from '@material-ui/core/colors/red';
 
 const DeleteDialog = ({ current, cta, id, message, open, onConfirm, onToggle }) => {
-  const cancel = () => onToggle();
-
   const confirm = () => {
     onToggle();
     onConfirm(current);
@@ -31,7 +29,7 @@ const DeleteDialog = ({ current, cta, id, message, open, onConfirm, onToggle }) 
           </ListItemAvatar>
           <ListItemText primary={cta} />
         </ListItem>
-        <ListItem aria-label={'Cancel'} button onClick={cancel}>
+        <ListItem aria-label={'Cancel'} button onClick={onToggle}>
           <ListItemAvatar>
             <Avatar>
               <CloseIcon color={`action`} />
