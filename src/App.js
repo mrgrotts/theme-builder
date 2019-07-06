@@ -31,20 +31,13 @@ class App extends Component {
     let palettes;
     for (let palette in this.state.palettes) {
       if (this.state.palettes[palette].id === paletteId) {
-        palettes = {
-          ...this.state.palettes,
-          [palette]: {
-            ...this.state.palettes[palette],
-            colors: this.state.palettes[palette].colors.map(col =>
-              col.name.toLowerCase() === color.id.toLowerCase()
-                ? { name: color.name, color: color.hex }
-                : col
-            )
-          }
-        };
-
-        return palettes;
+        this.state.palettes[palette].colors = this.state.palettes[palette].colors.map(col =>
+          col.name.toLowerCase() === color.id.toLowerCase()
+            ? { name: color.name, color: color.hex }
+            : col
+        );
       }
+      return palettes;
     }
 
     this.setState({ palettes }, this.syncLocalStorage);
