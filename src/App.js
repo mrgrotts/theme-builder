@@ -29,6 +29,7 @@ class App extends Component {
 
   updatePalette = (paletteId, color) => {
     let palettes = this.state.palettes;
+
     for (let palette in palettes) {
       if (palettes[palette].id === paletteId) {
         palettes[palette].colors = palettes[palette].colors.map(col =>
