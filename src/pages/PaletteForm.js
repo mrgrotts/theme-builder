@@ -18,7 +18,7 @@ import Layout from '../components/Layout';
 import PaletteFormToolBar from '../components/PaletteFormToolBar';
 
 import { DRAWER_WIDTH } from '../constants';
-import { ColorsState, ToggleState } from '../hooks';
+import { StorageState, ToggleState } from '../hooks';
 import { Main, MobileFirstMediaQuery, Nav, PaletteColumns, Typography } from '../theme';
 import { randomColor, seedPalettes } from '../utils';
 
@@ -117,7 +117,7 @@ const Palette = styled.div.attrs(props => ({
   }
 `;
 
-const PaletteForm = ({ classes, history, location, maxColors, palette, palettes, savePalette }) => {
+const PaletteForm = ({ history, location, maxColors, palette, palettes, savePalette }) => {
   if (!palette) {
     palette = seedPalettes[0];
   }
@@ -126,8 +126,8 @@ const PaletteForm = ({ classes, history, location, maxColors, palette, palettes,
     palette.colors = [];
   }
 
-  const [colors, onSetColors] = ColorsState(palette.colors);
-  const [toggled, onSetToggle] = ToggleState(false);
+  const [colors, onSetColors] = StorageState('colors', palette.colors);
+  const [toggled, OnToggle] = ToggleState(false);
   const full = colors.length >= maxColors;
 
   const onAddColor = color => onSetColors([...colors, color]);
@@ -141,9 +141,9 @@ const PaletteForm = ({ classes, history, location, maxColors, palette, palettes,
 
   const onDelete = name => onSetColors(colors.filter(color => color.name !== name));
 
-  const onDrawerOpen = () => onSetToggle(true);
+  const onDrawerOpen = () => OnToggle(true);
 
-  const onDrawerClose = () => onSetToggle(false);
+  const onDrawerClose = () => OnToggle(false);
 
   const onSave = (emojiData, paletteName) => {
     const id = paletteName.toLowerCase().replace(/ /g, '-');

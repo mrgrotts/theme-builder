@@ -6,7 +6,7 @@ import SingleColorBox from '../components/SingleColorBox';
 import Layout from '../components/Layout';
 import PaletteToolBar from '../components/PaletteToolBar';
 
-import { FormatState, ToggleState } from '../hooks';
+import { StorageState, ToggleState } from '../hooks';
 import { Main, MobileFirstMediaQuery, Nav, PaletteColumns } from '../theme';
 
 const Color = styled.section.attrs(props => ({
@@ -30,8 +30,8 @@ const NavTitle = styled.h1.attrs(props => ({
 `;
 
 const PaletteColor = ({ history, match, palette }) => {
-  const [format, onChangeFormat] = FormatState('hex');
-  const [open, onOpen] = ToggleState(false);
+  const [format, onChangeFormat] = StorageState('format', 'hex');
+  const [toggled, onToggle] = ToggleState(false);
 
   const onChange = (event, reason) => {
     onChangeFormat(event.target.value);
@@ -40,7 +40,7 @@ const PaletteColor = ({ history, match, palette }) => {
       return;
     }
 
-    onOpen(true);
+    onToggle(true);
   };
 
   const onClose = (event, reason) => {
@@ -48,7 +48,7 @@ const PaletteColor = ({ history, match, palette }) => {
       return;
     }
 
-    onOpen(false);
+    onToggle(false);
   };
 
   const getShades = () => {
@@ -108,7 +108,7 @@ const PaletteColor = ({ history, match, palette }) => {
         <NavTitle>
           {paletteName}: {paletteColor}
         </NavTitle>
-        <PaletteToolBar format={format} open={open} onChange={onChange} onClose={onClose} />
+        <PaletteToolBar format={format} toggled={toggled} onChange={onChange} onClose={onClose} />
       </Nav>
       <Main>
         <Color id={match.params.color} style={{ margin: '0' }}>

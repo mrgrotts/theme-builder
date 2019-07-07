@@ -7,7 +7,7 @@ import DeleteDialog from '../components/DeleteDialog';
 import Layout from '../components/Layout';
 import PaletteCard from '../components/PaletteCard';
 
-import { DialogState, CurrentDialogState } from '../hooks';
+import { StorageState, ToggleState } from '../hooks';
 import { Button, List, Main, MobileFirstMediaQuery, Nav, PaletteListColumns } from '../theme';
 import { THEME } from '../constants';
 const { TRANSITION_ALL } = THEME;
@@ -37,8 +37,8 @@ const NavBarTitle = styled.h1.attrs(props => ({
 `;
 
 const PaletteList = ({ deletePalette, history, palettes }) => {
-  const [open, onToggleDialog] = DialogState(false);
-  const [current, onCurrentDialog] = CurrentDialogState(null);
+  const [open, onToggleDialog] = ToggleState(false);
+  const [current, onCurrentDialog] = StorageState('current', null);
 
   const onToggle = () => onToggleDialog();
 

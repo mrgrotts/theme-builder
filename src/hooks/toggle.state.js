@@ -3,7 +3,7 @@ import { useState } from 'react';
 export const ToggleState = initialState => {
   const [toggled, setToggle] = useState(initialState);
 
-  const onSetToggle = status => setToggle(status);
+  const onToggle = status => setToggle(status);
 
-  return [toggled, onSetToggle];
+  return [toggled, onToggle];
 };

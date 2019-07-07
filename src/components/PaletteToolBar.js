@@ -43,7 +43,7 @@ const SliderLabel = styled.span`
   }
 `;
 
-const PaletteToolBar = ({ format, level, open, onChange, onChangeLevel, onClose }) => {
+const PaletteToolBar = ({ format, level, onChange, onChangeLevel, onClose, toggled }) => {
   let slider = null;
   if (level) {
     slider = (
@@ -75,7 +75,7 @@ const PaletteToolBar = ({ format, level, open, onChange, onChangeLevel, onClose 
       </Toolbar>
       <Snackbar
         message={`Format Changed To: ${format.toUpperCase()}`}
-        open={open}
+        open={toggled}
         onClose={onClose}
       />
     </>

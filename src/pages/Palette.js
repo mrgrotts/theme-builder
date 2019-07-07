@@ -6,7 +6,7 @@ import ColorDetailsModal from '../components/ColorDetailsModal';
 import Layout from '../components/Layout';
 import PaletteToolBar from '../components/PaletteToolBar';
 
-import { CurrentDialogState, FormatState, LevelState, ToggleState } from '../hooks';
+import { StorageState, ToggleState } from '../hooks';
 import { Main, MobileFirstMediaQuery, Nav, PaletteColumns } from '../theme';
 
 const NavBarTitle = styled.h1.attrs(props => ({
@@ -32,10 +32,10 @@ const PaletteColors = styled.section.attrs(props => ({
 `;
 
 const Palette = ({ palette, updatePalette }) => {
-  const [current, onCurrentDialog] = CurrentDialogState(null);
-  const [format, onChangeFormat] = FormatState('hex');
-  const [level, onChangeLevel] = LevelState(500);
-  const [toggled, onSetToggle] = ToggleState(false);
+  const [current, onCurrentDialog] = StorageState('current', null);
+  const [format, onChangeFormat] = StorageState('format', 'hex');
+  const [level, onChangeLevel] = StorageState('level', 500);
+  const [toggled, OnToggle] = ToggleState(false);
 
   const onChange = (event, reason) => {
     onChangeFormat(event.target.value);
@@ -44,7 +44,7 @@ const Palette = ({ palette, updatePalette }) => {
       return;
     }
 
-    onSetToggle(true);
+    OnToggle(true);
   };
 
   const onClick = (event, reason, color) => {
@@ -52,7 +52,7 @@ const Palette = ({ palette, updatePalette }) => {
       return;
     }
 
-    onSetToggle(true);
+    OnToggle(true);
     onCurrentDialog(color);
   };
 
@@ -62,7 +62,7 @@ const Palette = ({ palette, updatePalette }) => {
       return;
     }
 
-    onSetToggle(false);
+    OnToggle(false);
   };
 
   const onSave = (event, value) => {
@@ -72,7 +72,7 @@ const Palette = ({ palette, updatePalette }) => {
     color.name = value;
     console.log('saving: ', color);
     updatePalette(palette.id, color);
-    // onSetToggle(false);
+    // OnToggle(false);
   };
 
   const { colors, emoji, id, paletteName } = palette;

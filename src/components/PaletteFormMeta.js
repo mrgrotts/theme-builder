@@ -7,13 +7,13 @@ import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import EmojiPicker from './EmojiPicker';
 import PaletteFormMetaModal from './PaletteFormMetaModal';
 
-import { EmojiState, InputState, StageState, ToggleState } from '../hooks';
+import { InputState, StorageState, ToggleState } from '../hooks';
 
 const PaletteFormMeta = ({ location, onSave, palettes }) => {
-  const [emoji, onSetEmoji] = EmojiState('');
-  const [value, onInputChange] = InputState('');
-  const [stage, onSetStage] = StageState('form');
-  const [toggled, onSetToggle] = ToggleState(false);
+  const [emoji, onSetEmoji] = StorageState('emoji', '');
+  const [name, onSetName] = InputState('');
+  const [stage, onSetStage] = StorageState('stage', 'form');
+  const [toggled, OnToggle] = ToggleState(false);
 
   let title = 'Save Palette';
   let content = 'Give your palette a name and emoji to remember it by.';
@@ -22,23 +22,23 @@ const PaletteFormMeta = ({ location, onSave, palettes }) => {
     palettes.every(({ paletteName }) => paletteName.toLowerCase() !== name.toLowerCase())
   );
 
-  const onOpen = () => onSetToggle(true);
-  const onClose = () => onSetToggle(false);
+  const onOpen = () => OnToggle(true);
+  const onClose = () => OnToggle(false);
 
   const onChangeEmoji = emoji => {
-    console.log(value, stage, emoji);
+    console.log(name, stage, emoji);
     onSetEmoji(emoji);
     onSetStage('review');
   };
 
   const onSavePaletteName = event => {
-    console.log(value, stage, emoji);
+    console.log(name, stage, emoji);
     onSetStage('emoji');
   };
 
   const onSavePalette = () => {
-    console.log(value, stage, emoji);
-    onSave(emoji, value);
+    console.log(name, stage, emoji);
+    onSave(emoji, name);
     onClose();
   };
 
@@ -65,10 +65,10 @@ const PaletteFormMeta = ({ location, onSave, palettes }) => {
       label={`Palette Name`}
       margin={'normal'}
       name={`paletteName`}
-      onChange={onInputChange}
+      onChange={onSetName}
       placeholder={`A Juicy Palette Name`}
       validators={['required', 'isUniquePaletteName']}
-      value={value}
+      value={name}
       errorMessages={['Name is required.', 'Palette Name is taken.']}
       style={{ marginBottom: '2rem' }}
     />
@@ -89,7 +89,7 @@ const PaletteFormMeta = ({ location, onSave, palettes }) => {
 
   if (stage === 'review') {
     title = `Your New Palette`;
-    content = `${value} ${emoji && emoji.native}`;
+    content = `${name} ${emoji && emoji.native}`;
   }
 
   let to = `/`;

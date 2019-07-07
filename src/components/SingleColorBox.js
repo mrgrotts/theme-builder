@@ -180,13 +180,13 @@ const Shades = styled(Link).attrs(props => ({
 `;
 
 const SingleColorBox = ({ boxId, colindex, color, name, to, type }) => {
-  const [toggled, onSetToggle] = ToggleState(false);
+  const [toggled, OnToggle] = ToggleState(false);
   const isDark = chroma(color).luminance() <= 0.33;
   const dark = JSON.stringify(isDark);
 
   const onCopy = () => {
-    onSetToggle(true);
-    setTimeout(() => onSetToggle(false), 2500);
+    OnToggle(true);
+    setTimeout(() => OnToggle(false), 2500);
   };
 
   const onMouseEnter = id => {
