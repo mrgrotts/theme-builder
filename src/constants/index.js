@@ -13,6 +13,8 @@ export const THEME = {
   TRANSITION_ALL: `transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) 100ms`
 };
 
+export const MAX_COLORS = 20;
+
 export const MEDIA_QUERIES = {
   xs: {
     BREAKPOINT: 576, // 36rem

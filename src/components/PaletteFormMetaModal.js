@@ -8,7 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { ValidatorForm } from 'react-material-ui-form-validator';
 
-const ModalForm = ({
+const PaletteFormMetaModal = ({
   actions,
   children,
   content,
@@ -36,4 +36,4 @@ const ModalForm = ({
   </Dialog>
 );
 
-export default ModalForm;
+export default PaletteFormMetaModal;

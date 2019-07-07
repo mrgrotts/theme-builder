@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import chroma from 'chroma-js';
 
 import SingleColorCopy from './SingleColorCopy';
 
+import { ToggleState } from '../hooks';
 import { MobileFirstMediaQuery } from '../theme';
 
 import { THEME } from '../constants';
@@ -178,70 +179,63 @@ const Shades = styled(Link).attrs(props => ({
   text-transform: uppercase;
 `;
 
-class ColorBox extends Component {
-  state = {
-    isActive: false
+const SingleColorBox = ({ boxId, colindex, color, name, to, type }) => {
+  const [toggled, onSetToggle] = ToggleState(false);
+  const isDark = chroma(color).luminance() <= 0.33;
+  const dark = JSON.stringify(isDark);
+
+  const onCopy = () => {
+    onSetToggle(true);
+    setTimeout(() => onSetToggle(false), 2500);
   };
 
-  onCopy = () =>
-    this.setState({ isActive: true }, () =>
-      setTimeout(() => this.setState({ isActive: false }), 2500)
-    );
-
-  onMouseEnter = id => {
+  const onMouseEnter = id => {
     const button = document.getElementById(`${id}-to-clipboard`);
     button.setAttribute('aria-hidden', false);
     // button.setAttribute('aria-pressed', true);
   };
 
-  onMouseLeave = id => {
+  const onMouseLeave = id => {
     const button = document.getElementById(`${id}-to-clipboard`);
     button.setAttribute('aria-hidden', true);
     // button.setAttribute('aria-pressed', false);
   };
 
-  toColors = event => event.stopPropagation();
+  const toColors = event => event.stopPropagation();
 
-  render() {
-    const { isActive } = this.state;
-    let { boxId, colindex, color, name, to, type } = this.props;
-    const isDark = chroma(color).luminance() <= 0.33;
-    const dark = JSON.stringify(isDark);
-
-    let shades = null;
-    if (to) {
-      shades = (
-        <Shades aria-controls={boxId} onClick={this.toColors} role={'link'} to={to} dark={dark}>
-          Shades
-        </Shades>
-      );
-    }
-
-    return (
-      <Box
-        id={boxId}
-        colindex={colindex}
-        color={color}
-        name={name}
-        onMouseEnter={() => this.onMouseEnter(boxId)}
-        onMouseLeave={() => this.onMouseLeave(boxId)}
-        type={type}
-      >
-        <Overlay className={isActive && `active`} color={color} id={`${boxId}-overlay`} />
-        <OverlayInfo className={isActive && `active`} dark={dark}>
-          <h2>Copied!</h2>
-          <p>{color}</p>
-        </OverlayInfo>
-        <Container aria-label={`${boxId}-content`}>
-          <SingleColorCopy id={boxId} onCopy={() => this.onCopy()} dark={isDark} />
-          <Content aria-expanded={'false'}>
-            <Name dark={isDark}>{name}</Name>
-            {shades}
-          </Content>
-        </Container>
-      </Box>
+  let shades = null;
+  if (to) {
+    shades = (
+      <Shades aria-controls={boxId} onClick={toColors} role={'link'} to={to} dark={dark}>
+        Shades
+      </Shades>
     );
   }
-}
 
-export default ColorBox;
+  return (
+    <Box
+      id={boxId}
+      colindex={colindex}
+      color={color}
+      name={name}
+      onMouseEnter={() => onMouseEnter(boxId)}
+      onMouseLeave={() => onMouseLeave(boxId)}
+      type={type}
+    >
+      <Overlay className={toggled && `active`} color={color} id={`${boxId}-overlay`} />
+      <OverlayInfo className={toggled && `active`} dark={dark}>
+        <h2>Copied!</h2>
+        <p>{color}</p>
+      </OverlayInfo>
+      <Container aria-label={`${boxId}-content`}>
+        <SingleColorCopy id={boxId} onCopy={onCopy} dark={isDark} />
+        <Content aria-expanded={'false'}>
+          <Name dark={isDark}>{name}</Name>
+          {shades}
+        </Content>
+      </Container>
+    </Box>
+  );
+};
+
+export default SingleColorBox;

@@ -35,7 +35,7 @@ const Palette = ({ palette, updatePalette }) => {
   const [current, onCurrentDialog] = CurrentDialogState(null);
   const [format, onChangeFormat] = FormatState('hex');
   const [level, onChangeLevel] = LevelState(500);
-  const [open, onOpen] = ToggleState(false);
+  const [toggled, onSetToggle] = ToggleState(false);
 
   const onChange = (event, reason) => {
     onChangeFormat(event.target.value);
@@ -44,7 +44,7 @@ const Palette = ({ palette, updatePalette }) => {
       return;
     }
 
-    onOpen(true);
+    onSetToggle(true);
   };
 
   const onClick = (event, reason, color) => {
@@ -52,7 +52,7 @@ const Palette = ({ palette, updatePalette }) => {
       return;
     }
 
-    onOpen(true);
+    onSetToggle(true);
     onCurrentDialog(color);
   };
 
@@ -62,7 +62,7 @@ const Palette = ({ palette, updatePalette }) => {
       return;
     }
 
-    onOpen(false);
+    onSetToggle(false);
   };
 
   const onSave = (event, value) => {
@@ -72,7 +72,7 @@ const Palette = ({ palette, updatePalette }) => {
     color.name = value;
     console.log('saving: ', color);
     updatePalette(palette.id, color);
-    // onOpen(false);
+    // onSetToggle(false);
   };
 
   const { colors, emoji, id, paletteName } = palette;
@@ -110,7 +110,7 @@ const Palette = ({ palette, updatePalette }) => {
         <PaletteToolBar
           format={format}
           level={level}
-          open={open}
+          open={toggled}
           onChange={onChange}
           onChangeLevel={onChangeLevel}
           onClose={onClose}
@@ -119,13 +119,13 @@ const Palette = ({ palette, updatePalette }) => {
       <Main>
         <PaletteColors id={id}>{colorBoxes}</PaletteColors>
       </Main>
-      {current && open && (
+      {current && toggled && (
         <ColorDetailsModal
           boxId={current.name.toLowerCase().replace(/ /g, '-')}
           color={current}
           onClose={onClose}
           onSave={onSave}
-          open={open}
+          open={toggled}
           shades={`/palettes/${palette.id}/colors/${current.id}`}
           clone={`/palettes/${palette.id}/clone`}
         />
@@ -133,84 +133,5 @@ const Palette = ({ palette, updatePalette }) => {
     </Layout>
   );
 };
-
-// class Palette extends Component {
-//   state = {
-//     format: 'hex',
-//     level: 500,
-//     open: false
-//   };
-
-//   shouldComponentUpdate(nextProps, nextState) {
-//     const formatUnchanged = this.state.format === nextState.format;
-//     const openToggled = this.state.open !== nextState.open;
-
-//     if (formatUnchanged && openToggled) {
-//       return false;
-//     } else {
-//       return true;
-//     }
-//   }
-
-//   onChangeFormat = event => this.setState({ format: event.target.value, open: true });
-
-//   onChangeLevel = level => this.setState({ level });
-
-//   onToggleOpen = () => this.setState({ open: false });
-
-//   render() {
-//     const { format, level, open } = this.state;
-//     let { defaultPalette, palette } = this.props;
-
-//     if (!palette) {
-//       palette = defaultPalette;
-//     }
-
-//     const { colors, emoji, id, paletteName } = palette;
-
-//     let colindex = 0;
-//     const colorBoxes = colors[level].map(color => {
-//       if (colindex === PaletteColumns) {
-//         colindex = 1;
-//       } else {
-//         colindex++;
-//       }
-
-//       return (
-//         <ColorBox
-//           key={color.id}
-//           boxId={color.name.toLowerCase().replace(/ /g, '-')}
-//           colindex={colindex}
-//           color={color[format]}
-//           id={color.id}
-//           name={color.name}
-//           to={`/palettes/${palette.id}/colors/${color.id}`}
-//           type={'palette'}
-//         />
-//       );
-//     });
-
-//     return (
-//       <Layout emoji={emoji} paletteName={paletteName}>
-//         <Nav id={'palette'} style={{ padding: '1rem' }}>
-//           <NavBarTitle>
-//             <strong>Palette: </strong> {paletteName}
-//           </NavBarTitle>
-//           <PaletteToolBar
-//             format={format}
-//             level={level}
-//             open={open}
-//             onChangeFormat={this.onChangeFormat}
-//             onChangeLevel={this.onChangeLevel}
-//             onToggleOpen={this.onToggleOpen}
-//           />
-//         </Nav>
-//         <Main>
-//           <PaletteColors id={id}>{colorBoxes}</PaletteColors>
-//         </Main>
-//       </Layout>
-//     );
-//   }
-// }
 
 export default Palette;

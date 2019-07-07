@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { ChromePicker } from 'react-color';
 
 import { Button } from '../theme';
 
-class ColorPicker extends Component {
+class ColorPicker extends PureComponent {
   state = {
     color: 'teal',
     name: 'teal'

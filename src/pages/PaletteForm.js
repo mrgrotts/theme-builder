@@ -1,14 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
+import styled from 'styled-components';
 
-import classNames from 'classnames';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+// import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/core/styles';
 
 import { arrayMove } from 'react-sortable-hoc';
 
@@ -19,257 +18,241 @@ import Layout from '../components/Layout';
 import PaletteFormToolBar from '../components/PaletteFormToolBar';
 
 import { DRAWER_WIDTH } from '../constants';
+import { ColorsState, ToggleState } from '../hooks';
 import { Main, MobileFirstMediaQuery, Nav, PaletteColumns, Typography } from '../theme';
 import { randomColor, seedPalettes } from '../utils';
 
 const screenWidth = window.innerWidth < DRAWER_WIDTH ? window.innerWidth : DRAWER_WIDTH;
 
-const styles = theme => ({
-  root: {
-    display: 'flex'
-  },
-  drawer: {
-    flexShrink: 0,
-    height: '100vh',
-    width: screenWidth,
-    [MobileFirstMediaQuery('xs')]: {
-      width: DRAWER_WIDTH
-    }
-  },
-  drawerPaper: {
-    alignItems: 'center',
-    display: 'flex',
-    width: screenWidth,
-    [MobileFirstMediaQuery('xs')]: {
-      marginTop: '5rem',
-      width: DRAWER_WIDTH
-    }
-  },
-  drawerHeader: {
-    alignItems: 'center',
-    display: 'flex',
-    height: '5rem',
-    justifyContent: 'flex-end',
-    ...theme.mixins.toolbar,
-    width: '100%',
-    [MobileFirstMediaQuery('xs')]: {
-      padding: '0 0.5rem'
-    }
-  },
-  content: {
-    flexGrow: 1,
-    height: 'calc(100vh - 5rem)',
-    padding: 0,
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    }),
-    marginLeft: -screenWidth,
-    [MobileFirstMediaQuery('xs')]: {
-      marginLeft: -DRAWER_WIDTH
-    }
-  },
-  contentShift: {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    }),
-    marginLeft: 0
-  },
-  container: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    justifyContent: 'flex-start',
-    margin: '0 auto',
-    width: '90%',
-    [MobileFirstMediaQuery('xs')]: {
-      width: '100%'
-    }
-  },
-  buttons: {
-    margin: '0 auto'
-  },
-  button: {
-    width: 'calc(50% - 0.5rem)'
+const Root = styled.div`
+  display: flex;
+`;
+
+const Actions = styled.div`
+  margin: 3rem auto;
+`;
+
+const Action = styled(Button)`
+  width: calc(50% - 0.5rem);
+`;
+
+const Container = styled.div`
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justifycontent: flex-start;
+  margin: 0 auto;
+  width: 90%;
+
+  ${MobileFirstMediaQuery('xs')} {
+    width: 100%;
   }
-});
+`;
 
-class PaletteForm extends Component {
-  static defaultProps = {
-    maxColors: 20
-  };
+const PaletteFormDrawer = styled(Drawer)`
+  flex-shrink: 0;
+  height: 100vh;
+  width: ${screenWidth}px;
 
-  state = {
-    colors: [],
-    open: false,
-    columns: PaletteColumns
-  };
+  .MuiDrawer-paper {
+    align-items: center;
+    display: flex;
+    width: ${screenWidth}px;
 
-  componentDidMount() {
-    this.loadPalette();
+    ${MobileFirstMediaQuery('xs')} {
+      margin-top: 5rem;
+      width: ${DRAWER_WIDTH}px;
+    }
   }
 
-  loadPalette = () => {
-    let { palette } = this.props;
+  ${MobileFirstMediaQuery('xs')} {
+    width: ${DRAWER_WIDTH}px;
+  }
+`;
 
-    if (!palette) {
-      palette = seedPalettes[4];
-    }
+const DrawerHeader = styled.div`
+  align-items: center;
+  display: flex;
+  height: 5rem;
+  justify-content: flex-end;
+  width: 100%;
+  ${'' /* ${theme.mixins.toolbar} */}
 
-    this.setState({ colors: palette.colors });
-  };
+  ${MobileFirstMediaQuery('xs')} {
+    padding: 0 0.5rem;
+  }
+`;
 
-  onAddColor = color => this.setState({ colors: [...this.state.colors, color] });
+const Palette = styled.div.attrs(props => ({
+  toggled: props.toggled || false
+}))`
+  flex-grow: 1;
+  height: calc(100vh - 5rem);
+  padding: 0;
+  transition: margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+  margin-left: ${-screenWidth}px;
 
-  onAddRandomColor = () => {
-    const { colors } = this.state;
-    const { palettes } = this.props;
+  ${({ toggled }) =>
+    toggled && {
+      marginLeft: 0,
+      transition:
+        'margin 225ms cubic-bezier(0.0, 0, 0.2, 1) 0ms, width 225ms cubic-bezier(0.0, 0, 0.2, 1) 0ms'
+    }}
 
+  section {
+    place-content: start flex-start;
+    display: flex;
+    flex-flow: row wrap;
+    height: 100vh;
+  }
+
+  ${MobileFirstMediaQuery('xs')} {
+    margin-left: ${-DRAWER_WIDTH}px;
+
+    ${({ toggled }) =>
+      toggled && {
+        marginLeft: 0
+      }}
+  }
+`;
+
+const PaletteForm = ({ classes, history, location, maxColors, palette, palettes, savePalette }) => {
+  if (!palette) {
+    palette = seedPalettes[0];
+  }
+
+  if (!palette.colors) {
+    palette.colors = [];
+  }
+
+  const [colors, onSetColors] = ColorsState(palette.colors);
+  const [toggled, onSetToggle] = ToggleState(false);
+  const full = colors.length >= maxColors;
+
+  const onAddColor = color => onSetColors([...colors, color]);
+
+  const onAddRandomColor = () => {
     const random = randomColor(palettes, colors);
-    this.setState({ colors: [...colors, random] });
+    onSetColors([...colors, random]);
   };
 
-  onClear = () => this.setState({ colors: [] });
+  const onClear = () => onSetColors([]);
 
-  onDelete = name =>
-    this.setState({ colors: this.state.colors.filter(color => color.name !== name) });
+  const onDelete = name => onSetColors(colors.filter(color => color.name !== name));
 
-  onDrawerOpen = () => this.setState({ open: true });
+  const onDrawerOpen = () => onSetToggle(true);
 
-  onDrawerClose = () => this.setState({ open: false });
+  const onDrawerClose = () => onSetToggle(false);
 
-  onSave = (emojiData, paletteName) => {
-    const { colors } = this.state;
+  const onSave = (emojiData, paletteName) => {
     const id = paletteName.toLowerCase().replace(/ /g, '-');
     const emoji = emojiData.native;
     const palette = { colors, emoji, id, paletteName };
 
-    this.props.savePalette(palette);
-    this.props.history.push('/');
+    savePalette(palette);
+    history.push('/');
   };
 
-  onSortEnd = ({ oldIndex, newIndex }) =>
-    this.setState(({ colors }) => ({ colors: arrayMove(colors, oldIndex, newIndex) }));
+  const onSortEnd = ({ oldIndex, newIndex }) => onSetColors(arrayMove(colors, oldIndex, newIndex));
 
-  render() {
-    let { colors, columns, open } = this.state;
-    let { classes, location, maxColors, palettes, theme } = this.props;
-
-    if (!colors) {
-      colors = [];
+  let colindex = 0;
+  const renderedColors = colors.map(({ color, name }, index) => {
+    if (colindex === PaletteColumns) {
+      colindex = 1;
+    } else {
+      colindex++;
     }
 
-    let full = colors.length >= maxColors;
+    return (
+      <DraggableBox
+        key={name}
+        colindex={colindex}
+        color={color}
+        id={name}
+        index={index}
+        name={name}
+        onDelete={() => onDelete(name)}
+      />
+    );
+  });
 
-    let colindex = 0;
-    const renderedColors = colors.map(({ color, name }, index) => {
-      if (colindex === columns) {
-        colindex = 1;
-      } else {
-        colindex++;
-      }
+  const drawer = (
+    <PaletteFormDrawer variant="persistent" anchor="left" open={toggled}>
+      <DrawerHeader>
+        <IconButton onClick={onDrawerClose}>
+          {/* {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />} */}
+          <ChevronLeftIcon />
+        </IconButton>
+      </DrawerHeader>
+      <Divider />
+      <Container>
+        <Typography type={`h4`}>Design A Palette</Typography>
+        <Actions style={{ margin: '3rem 0' }}>
+          <Action
+            onClick={onClear}
+            variant={`contained`}
+            color={`secondary`}
+            style={{ marginRight: '1rem' }}
+          >
+            Clear Palette
+          </Action>
+          <Action
+            onClick={onAddRandomColor}
+            variant={`contained`}
+            color={`primary`}
+            disabled={full}
+          >
+            Random Color
+          </Action>
+        </Actions>
+        <ColorPicker colors={colors} full={full} onAddColor={onAddColor} />
+      </Container>
+    </PaletteFormDrawer>
+  );
 
-      return (
-        <DraggableBox
-          key={name}
-          colindex={colindex}
-          color={color}
-          id={name}
-          index={index}
-          name={name}
-          onDelete={() => this.onDelete(name)}
-        />
-      );
-    });
-
-    const drawer = (
-      <Drawer
-        className={classes.drawer}
-        variant="persistent"
-        anchor="left"
-        open={open}
-        classes={{
-          paper: classes.drawerPaper
+  const newPalette = (
+    <Palette toggled={toggled}>
+      <Draggable
+        aria-colcount={PaletteColumns}
+        axis={`xy`}
+        columns={PaletteColumns}
+        distance={20}
+        onSortEnd={onSortEnd}
+        style={{
+          alignContent: 'start',
+          display: 'flex',
+          flexFlow: 'row wrap',
+          height: '100vh',
+          justifyContent: 'flex-start'
         }}
       >
-        <div className={classes.drawerHeader}>
-          <IconButton onClick={this.onDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </div>
-        <Divider />
-        <div className={classes.container}>
-          <Typography type={`h4`}>Design A Palette</Typography>
-          <div className={classes.buttons} style={{ margin: '3rem 0' }}>
-            <Button
-              className={classes.button}
-              onClick={this.onClear}
-              variant={`contained`}
-              color={`secondary`}
-              style={{ marginRight: '1rem' }}
-            >
-              Clear Palette
-            </Button>
-            <Button
-              className={classes.button}
-              onClick={this.onAddRandomColor}
-              variant={`contained`}
-              color={`primary`}
-              disabled={full}
-            >
-              Random Color
-            </Button>
-          </div>
-          <ColorPicker colors={colors} full={full} onAddColor={this.onAddColor} />
-        </div>
-      </Drawer>
-    );
+        {renderedColors}
+      </Draggable>
+    </Palette>
+  );
 
-    const palette = (
-      <div className={classNames(classes.content, { [classes.contentShift]: open })}>
-        <Draggable
-          aria-colcount={columns}
-          axis={`xy`}
-          columns={columns}
-          distance={20}
-          onSortEnd={this.onSortEnd}
-          style={{
-            alignContent: 'start',
-            display: 'flex',
-            flexFlow: 'row wrap',
-            height: '100vh',
-            justifyContent: 'flex-start'
-          }}
-        >
-          {renderedColors}
-        </Draggable>
-      </div>
-    );
+  return (
+    <Layout id={'new-palette'}>
+      <CssBaseline />
+      <Nav id={'new-palette'}>
+        <PaletteFormToolBar
+          open={toggled}
+          palettes={palettes}
+          onSave={onSave}
+          onDrawerOpen={onDrawerOpen}
+          location={location}
+        />
+        <DrawerHeader />
+      </Nav>
+      <Main>
+        <Root>
+          {drawer}
+          {newPalette}
+        </Root>
+      </Main>
+    </Layout>
+  );
+};
 
-    return (
-      <Layout id={'new-palette'}>
-        <CssBaseline />
-        <Nav id={'new-palette'}>
-          <PaletteFormToolBar
-            open={open}
-            palettes={palettes}
-            onSave={this.onSave}
-            onDrawerOpen={this.onDrawerOpen}
-            location={location}
-          />
-          <div className={classes.drawerHeader} />
-        </Nav>
-        <Main>
-          <div className={classes.root}>
-            {drawer}
-            {palette}
-          </div>
-        </Main>
-      </Layout>
-    );
-  }
-}
-
-export default withStyles(styles, { withTheme: true })(PaletteForm);
+export default PaletteForm;

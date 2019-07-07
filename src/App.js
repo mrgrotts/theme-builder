@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { Route } from 'react-router-dom';
 
 import AnimatedRouter from './hoc/AnimatedRouter';
@@ -8,100 +8,101 @@ import PaletteColor from './pages/PaletteColor';
 import PaletteList from './pages/PaletteList';
 
 import { generatePalette, seedPalettes } from './utils';
+import { MAX_COLORS } from './constants';
 
-class App extends Component {
-  state = {
-    palettes: JSON.parse(window.localStorage.getItem('palettes')) || seedPalettes
+const App = props => {
+  const initialState = JSON.parse(window.localStorage.getItem('palettes')) || seedPalettes;
+  const [palettes, setPalettes] = useState(initialState);
+
+  const defaultPalette = generatePalette(palettes[4]);
+
+  const getPalette = id => generatePalette(palettes.find(palette => palette.id === id));
+
+  const savePalette = palette => {
+    setPalettes([...palettes, palette]);
+    syncLocalStorage();
   };
 
-  getPalette = id => generatePalette(this.state.palettes.find(palette => palette.id === id));
+  const deletePalette = id => {
+    setPalettes(palettes.filter(palette => palette.id !== id));
+    syncLocalStorage();
+  };
 
-  savePalette = palette =>
-    this.setState({ palettes: [...this.state.palettes, palette] }, this.syncLocalStorage);
+  const updatePalette = (paletteId, color) => {
+    const update = palettes => {
+      for (let palette in palettes) {
+        if (palettes[palette].id === paletteId) {
+          palettes[palette].colors = palettes[palette].colors.map(col =>
+            col.name.toLowerCase() === color.id.toLowerCase()
+              ? { name: color.name, color: color.hex }
+              : col
+          );
+        }
 
-  deletePalette = id =>
-    this.setState(
-      prevState => ({
-        palettes: prevState.palettes.filter(palette => palette.id !== id)
-      }),
-      this.syncLocalStorage
-    );
-
-  updatePalette = (paletteId, color) => {
-    let palettes = this.state.palettes;
-
-    for (let palette in palettes) {
-      if (palettes[palette].id === paletteId) {
-        palettes[palette].colors = palettes[palette].colors.map(col =>
-          col.name.toLowerCase() === color.id.toLowerCase()
-            ? { name: color.name, color: color.hex }
-            : col
-        );
+        return palettes;
       }
+    };
 
-      return palettes;
-    }
-
-    this.setState({ palettes }, this.syncLocalStorage);
+    setPalettes(update(palettes));
+    syncLocalStorage();
   };
 
-  syncLocalStorage = () =>
-    window.localStorage.setItem('palettes', JSON.stringify(this.state.palettes));
+  const syncLocalStorage = () => window.localStorage.setItem('palettes', JSON.stringify(palettes));
 
-  render() {
-    let { palettes } = this.state;
-
-    const defaultPalette = generatePalette(palettes[4]);
-
-    return (
-      <AnimatedRouter>
-        <Route
-          exact
-          path={`/`}
-          render={props => (
-            <PaletteList palettes={palettes} deletePalette={this.deletePalette} {...props} />
-          )}
-        />
-        <Route
-          exact
-          path={`/palettes/new`}
-          render={props => (
-            <PaletteForm palettes={palettes} savePalette={this.savePalette} {...props} />
-          )}
-        />
-        <Route
-          exact
-          path={`/palettes/:palette`}
-          render={props => (
-            <Palette
-              palette={this.getPalette(props.match.params.palette) || defaultPalette}
-              updatePalette={this.updatePalette}
-              {...props}
-            />
-          )}
-        />
-        <Route
-          exact
-          path={`/palettes/:palette/clone`}
-          render={props => (
-            <PaletteForm
-              palette={palettes[props.match.params.palette]}
-              palettes={palettes}
-              savePalette={this.savePalette}
-              {...props}
-            />
-          )}
-        />
-        <Route
-          exact
-          path={`/palettes/:palette/colors/:color`}
-          render={props => (
-            <PaletteColor palette={this.getPalette(props.match.params.palette)} {...props} />
-          )}
-        />
-      </AnimatedRouter>
-    );
-  }
-}
+  return (
+    <AnimatedRouter>
+      <Route
+        exact
+        path={`/`}
+        render={props => (
+          <PaletteList palettes={palettes} deletePalette={deletePalette} {...props} />
+        )}
+      />
+      <Route
+        exact
+        path={`/palettes/new`}
+        render={props => (
+          <PaletteForm
+            maxColors={MAX_COLORS}
+            palettes={palettes}
+            savePalette={savePalette}
+            {...props}
+          />
+        )}
+      />
+      <Route
+        exact
+        path={`/palettes/:palette`}
+        render={props => (
+          <Palette
+            palette={getPalette(props.match.params.palette) || defaultPalette}
+            updatePalette={updatePalette}
+            {...props}
+          />
+        )}
+      />
+      <Route
+        exact
+        path={`/palettes/:palette/clone`}
+        render={props => (
+          <PaletteForm
+            maxColors={MAX_COLORS}
+            palette={palettes[props.match.params.palette]}
+            palettes={palettes}
+            savePalette={savePalette}
+            {...props}
+          />
+        )}
+      />
+      <Route
+        exact
+        path={`/palettes/:palette/colors/:color`}
+        render={props => (
+          <PaletteColor palette={getPalette(props.match.params.palette)} {...props} />
+        )}
+      />
+    </AnimatedRouter>
+  );
+};
 
 export default App;
