@@ -6,7 +6,7 @@ import ColorDetailsModal from '../components/ColorDetailsModal';
 import Layout from '../components/Layout';
 import PaletteToolBar from '../components/PaletteToolBar';
 
-import { CurrentDialogState, FormatState, LevelState, SnackbarState } from '../hooks';
+import { CurrentDialogState, FormatState, LevelState, ToggleState } from '../hooks';
 import { Main, MobileFirstMediaQuery, Nav, PaletteColumns } from '../theme';
 
 const NavBarTitle = styled.h1.attrs(props => ({
@@ -33,11 +33,9 @@ const PaletteColors = styled.section.attrs(props => ({
 
 const Palette = ({ palette, updatePalette }) => {
   const [current, onCurrentDialog] = CurrentDialogState(null);
-  // const [open, onToggleDialog] = DialogState(false);
-
   const [format, onChangeFormat] = FormatState('hex');
   const [level, onChangeLevel] = LevelState(500);
-  const [open, onOpen] = SnackbarState(false);
+  const [open, onOpen] = ToggleState(false);
 
   const onChange = (event, reason) => {
     onChangeFormat(event.target.value);
@@ -68,12 +66,13 @@ const Palette = ({ palette, updatePalette }) => {
   };
 
   const onSave = (event, value) => {
+    event.preventDefault();
     console.log('fired onSave: ', value, current);
     let color = current;
     color.name = value;
     console.log('saving: ', color);
     updatePalette(palette.id, color);
-    onOpen(false);
+    // onOpen(false);
   };
 
   const { colors, emoji, id, paletteName } = palette;
@@ -120,13 +119,17 @@ const Palette = ({ palette, updatePalette }) => {
       <Main>
         <PaletteColors id={id}>{colorBoxes}</PaletteColors>
       </Main>
-      <ColorDetailsModal
-        color={current}
-        onClose={onClose}
-        onSave={onSave}
-        open={open}
-        to={current && `/palettes/${palette.id}/colors/${current.id}`}
-      />
+      {current && open && (
+        <ColorDetailsModal
+          boxId={current.name.toLowerCase().replace(/ /g, '-')}
+          color={current}
+          onClose={onClose}
+          onSave={onSave}
+          open={open}
+          shades={`/palettes/${palette.id}/colors/${current.id}`}
+          clone={`/palettes/${palette.id}/clone`}
+        />
+      )}
     </Layout>
   );
 };

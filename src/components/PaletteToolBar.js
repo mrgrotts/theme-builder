@@ -61,7 +61,8 @@ const PaletteToolBar = ({ format, level, open, onChange, onChangeLevel, onClose 
     options: [
       { value: 'hex', name: `HEX - #ffffff` },
       { value: 'rgb', name: `RGB - rgb(255, 255, 255)` },
-      { value: 'rgba', name: `RGBA - rgba(255, 255, 255, 1) ` }
+      { value: 'rgba', name: `RGBA - rgba(255, 255, 255, 1)` },
+      { value: 'cmyk', name: `CMYK - cmyk(0,0,0,0)` }
     ],
     value: format
   };

@@ -58,7 +58,7 @@ const Box = styled.div.attrs(props => ({
   }
 
   ${MobileFirstMediaQuery('xs')} {
-    height: 10%;
+    height: 20%;
     min-width: 50%;
     width: 50%;
 

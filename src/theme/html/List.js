@@ -33,7 +33,7 @@ export const List = styled.ul.attrs(props => ({
         return `repeat(3, 30%)`;
       }
     }};
-    padding: ${({ padding }) => `1rem 3rem ${padding * 2}rem 3rem`};
+    padding: ${({ padding }) => `3rem 3rem ${padding * 2}rem 3rem`};
     width: 64rem;
   }
 `;

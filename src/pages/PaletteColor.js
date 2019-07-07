@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 
 import BackBox from '../components/BackBox';
-import CopyColorBox from '../components/CopyColorBox';
+import SingleColorBox from '../components/SingleColorBox';
 import Layout from '../components/Layout';
 import PaletteToolBar from '../components/PaletteToolBar';
 
-import { FormatState, SnackbarState } from '../hooks';
+import { FormatState, ToggleState } from '../hooks';
 import { Main, MobileFirstMediaQuery, Nav, PaletteColumns } from '../theme';
 
 const Color = styled.section.attrs(props => ({
@@ -31,7 +31,7 @@ const NavTitle = styled.h1.attrs(props => ({
 
 const PaletteColor = ({ history, match, palette }) => {
   const [format, onChangeFormat] = FormatState('hex');
-  const [open, onOpen] = SnackbarState(false);
+  const [open, onOpen] = ToggleState(false);
 
   const onChange = (event, reason) => {
     onChangeFormat(event.target.value);
@@ -74,7 +74,7 @@ const PaletteColor = ({ history, match, palette }) => {
       }
 
       return (
-        <CopyColorBox
+        <SingleColorBox
           key={shade.name}
           boxId={shade.name.toLowerCase().replace(/ /g, '-')}
           colindex={colindex}

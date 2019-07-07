@@ -82,6 +82,18 @@ class App extends Component {
         />
         <Route
           exact
+          path={`/palettes/:palette/clone`}
+          render={props => (
+            <PaletteForm
+              palette={palettes[props.match.params.palette]}
+              palettes={palettes}
+              savePalette={this.savePalette}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          exact
           path={`/palettes/:palette/colors/:color`}
           render={props => (
             <PaletteColor palette={this.getPalette(props.match.params.palette)} {...props} />

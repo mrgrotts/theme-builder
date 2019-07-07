@@ -2,76 +2,127 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-import Button from '@material-ui/core/Button';
-
-import ModalForm from './Modal';
+import Copy from './Copy';
+import ModalEditable from './ModalEditable';
 
 import { InputState } from '../hooks';
+import { THEME } from '../constants';
+const { TRANSITION_ALL } = THEME;
 
-const ThemedInput = styled.input`
-  background: transparent;
+const Divider = styled.hr`
+  background-color: rgb(238, 238, 238);
   border: none;
-  border-bottom: 1px solid ${props => props.color || '#141414'};
-  color: ${props => props.color || '#141414'};
-  font-size: 1rem;
-  height: 100%;
-  outline: none;
-  padding: 0.25rem;
-  width: 100%;
+  margin: 1.5rem 0px;
+  height: 1px;
 `;
 
-const ColorDetailsModal = ({ color, onClose, onSave, open, to, ...props }) => {
+const Input = styled.input`
+  background: transparent;
+  border: none;
+  color: ${props => props.color || '#141414'};
+  font-size: 1.1rem;
+  line-height: 2.25rem;
+  outline: none;
+  ${TRANSITION_ALL};
+
+  :active,
+  :focus {
+    border-bottom: 1px solid ${props => props.color || '#141414'};
+  }
+`;
+
+const CopyColor = ({ boxId, color, onCopy }) => <Copy id={boxId} color={color} onCopy={onCopy} />;
+
+const ColorDetailsModal = ({ boxId, clone, color, onClose, onSave, open, shades, ...props }) => {
   if (!open || !color) {
     return null;
   }
 
-  const [value, onInputChange] = InputState(color ? color.name : '');
+  const [value, onInputChange] = InputState(color.name);
 
-  const toColors = event => event.stopPropagation();
+  const onChange = event => {
+    if (event.type === 'change' || event.type === 'blur') {
+      onInputChange(event);
+      onSave(event, value);
+    }
+  };
 
-  const actions = (
-    <>
-      <Button onClick={onClose} color={'primary'}>
-        Cancel
-      </Button>
-      <Button variant={'contained'} color={'primary'} onClick={event => onSave(event, value)}>
-        Save Palette
-      </Button>
-    </>
+  const onCopy = event => {
+    let copy = event.target;
+
+    copy.innerText = `Copied!`;
+    setTimeout(() => {
+      copy.innerText = `Copy`;
+    }, 2500);
+  };
+
+  const toColors = event => {
+    event.stopPropagation();
+    onClose();
+  };
+
+  const onSubmit = event => {
+    event.stopPropagation();
+    onClose();
+    onSave(event, value);
+  };
+
+  const editableTitle = (
+    <Input
+      id={`color-name`}
+      name={`colorName`}
+      color={color.color}
+      onBlur={onChange}
+      onChange={onChange}
+      type={`text`}
+      value={value}
+    />
   );
 
   const content = (
-    <Link onClick={toColors} to={to}>
+    <Link onClick={toColors} style={{ fontSize: '1.1rem' }} to={shades}>
       More Shades
     </Link>
   );
 
   return (
-    <ModalForm
-      actions={actions}
+    <ModalEditable
       content={content}
+      color={color}
       onClose={onClose}
+      onSubmit={onSubmit}
       open={open}
       PaperProps={{ style: { minWidth: '20rem' } }}
-      title={color.name}
+      title={editableTitle}
+      pathname={clone}
     >
+      <Divider />
       <div style={{ display: 'flex', flexFlow: 'column nowrap', margin: '1rem 0' }}>
-        <fieldset>
-          <label htmlFor={`colorName`}>Color Name</label>
-          <ThemedInput
-            id={`color-name`}
-            name={`colorName`}
-            onChange={onInputChange}
-            value={value}
-          />
-        </fieldset>
-        <hr />
-        <span>HEX: {color.hex}</span>
-        <span>RGB: {color.rgb}</span>
-        <span>RGBA: {color.rgba}</span>
+        <div
+          style={{
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'space-between',
+            unicodeBidi: 'normal'
+          }}
+        >
+          <span>HEX: {color.hex}</span>
+          <CopyColor boxId={boxId} color={color.hex} onCopy={onCopy} />
+        </div>
+        <div style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
+          <span>RGB: {color.rgb}</span>
+          <CopyColor boxId={boxId} color={color.rgb} onCopy={onCopy} />
+        </div>
+        <div style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
+          <span>RGBA: {color.rgba}</span>
+          <CopyColor boxId={boxId} color={color.rgba} onCopy={onCopy} />
+        </div>
+        <div style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
+          <span>CMYK: {color.cmyk}</span>
+          <CopyColor boxId={boxId} color={color.cmyk} onCopy={onCopy} />
+        </div>
       </div>
-      {/* <Button onClick={event => onSave(event)}>Update</Button> */}
-    </ModalForm>
+    </ModalEditable>
   );
 };
 

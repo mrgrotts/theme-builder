@@ -102,9 +102,23 @@ class PaletteForm extends Component {
   };
 
   state = {
-    colors: seedPalettes[4].colors,
+    colors: [],
     open: false,
     columns: PaletteColumns
+  };
+
+  componentDidMount() {
+    this.loadPalette();
+  }
+
+  loadPalette = () => {
+    let { palette } = this.props;
+
+    if (!palette) {
+      palette = seedPalettes[4];
+    }
+
+    this.setState({ colors: palette.colors });
   };
 
   onAddColor = color => this.setState({ colors: [...this.state.colors, color] });
@@ -140,9 +154,35 @@ class PaletteForm extends Component {
     this.setState(({ colors }) => ({ colors: arrayMove(colors, oldIndex, newIndex) }));
 
   render() {
-    const { colors, columns, open } = this.state;
-    const { classes, maxColors, palettes, theme } = this.props;
+    let { colors, columns, open } = this.state;
+    let { classes, location, maxColors, palettes, theme } = this.props;
+
+    if (!colors) {
+      colors = [];
+    }
+
     let full = colors.length >= maxColors;
+
+    let colindex = 0;
+    const renderedColors = colors.map(({ color, name }, index) => {
+      if (colindex === columns) {
+        colindex = 1;
+      } else {
+        colindex++;
+      }
+
+      return (
+        <DraggableBox
+          key={name}
+          colindex={colindex}
+          color={color}
+          id={name}
+          index={index}
+          name={name}
+          onDelete={() => this.onDelete(name)}
+        />
+      );
+    });
 
     const drawer = (
       <Drawer
@@ -187,7 +227,6 @@ class PaletteForm extends Component {
       </Drawer>
     );
 
-    let colindex = 0;
     const palette = (
       <div className={classNames(classes.content, { [classes.contentShift]: open })}>
         <Draggable
@@ -204,25 +243,7 @@ class PaletteForm extends Component {
             justifyContent: 'flex-start'
           }}
         >
-          {colors.map(({ color, name }, index) => {
-            if (colindex === columns) {
-              colindex = 1;
-            } else {
-              colindex++;
-            }
-
-            return (
-              <DraggableBox
-                key={name}
-                colindex={colindex}
-                color={color}
-                id={name}
-                index={index}
-                name={name}
-                onDelete={() => this.onDelete(name)}
-              />
-            );
-          })}
+          {renderedColors}
         </Draggable>
       </div>
     );
@@ -236,6 +257,7 @@ class PaletteForm extends Component {
             palettes={palettes}
             onSave={this.onSave}
             onDrawerOpen={this.onDrawerOpen}
+            location={location}
           />
           <div className={classes.drawerHeader} />
         </Nav>

@@ -34,6 +34,7 @@ const Card = styled.li.attrs(props => ({
   flex-flow: column nowrap;
   justify-content: space-between;
   height: 100%;
+  max-height: 15rem;
   padding: 1rem;
   position: relative;
 

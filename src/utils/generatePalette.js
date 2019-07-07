@@ -1,6 +1,18 @@
 import chroma from 'chroma-js';
 const levels = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
 
+const generateCMYK = scale => {
+  let r = scale._rgb[0] / 255;
+  let g = scale._rgb[1] / 255;
+  let b = scale._rgb[2] / 255;
+  let k = Math.min(1 - r, 1 - g, 1 - b).toFixed(2);
+  let c = Math.round(((1 - r - k) / (1 - k)) * 100);
+  let y = Math.round(((1 - g - k) / (1 - k)) * 100);
+  let m = Math.round(((1 - b - k) / (1 - k)) * 100);
+
+  return `cmyk(${c}, ${m}, ${y}, ${k})`;
+};
+
 export const generatePalette = ({ colors, emoji, id, paletteName }) => {
   let palette = { colors: {}, emoji, id, paletteName };
 
@@ -20,7 +32,8 @@ export const generatePalette = ({ colors, emoji, id, paletteName }) => {
         rgba: chroma(scale[i])
           .css()
           .replace('rgb', 'rgba')
-          .replace(')', ',1.0)')
+          .replace(')', ',1.0)'),
+        cmyk: generateCMYK(chroma(scale[i]))
       });
     }
   }

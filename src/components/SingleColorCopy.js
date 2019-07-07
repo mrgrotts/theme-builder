@@ -5,9 +5,9 @@ import { Button } from '../theme';
 import { copyToClipboard } from '../utils';
 
 const CopyButton = styled(Button)`
-  background: transparent;
-  box-shadow: none;
-  color: #141414;
+  color: ${props => (props.dark && props.dark ? 'rgba(255, 255, 255, 1)' : '#141414')};
+  opacity: 0;
+  text-transform: uppercase;
   width: 128px;
 `;
 

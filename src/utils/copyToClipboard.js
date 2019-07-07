@@ -29,9 +29,25 @@ function copyAttribute(element) {
   document.body.removeChild(node);
 }
 
-export const copyToClipboard = event => {
+function copyColor(color) {
+  const node = createNode(color);
+  document.body.appendChild(node);
+  copyNode(node);
+  document.body.removeChild(node);
+}
+
+export const copyToClipboard = (event, color) => {
   const parent = event.target.parentNode.parentNode.id;
   const element = parent ? document.getElementById(parent) : null;
+
+  if (color) {
+    console.log(color);
+    try {
+      copyColor(color);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   if (element) {
     try {

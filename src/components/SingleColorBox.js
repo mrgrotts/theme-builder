@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import chroma from 'chroma-js';
 
-import Copy from './Copy';
+import SingleColorCopy from './SingleColorCopy';
 
 import { MobileFirstMediaQuery } from '../theme';
 
@@ -233,7 +233,7 @@ class ColorBox extends Component {
           <p>{color}</p>
         </OverlayInfo>
         <Container aria-label={`${boxId}-content`}>
-          <Copy id={boxId} onCopy={() => this.onCopy(boxId)} dark={isDark} />
+          <SingleColorCopy id={boxId} onCopy={() => this.onCopy()} dark={isDark} />
           <Content aria-expanded={'false'}>
             <Name dark={isDark}>{name}</Name>
             {shades}

@@ -13,6 +13,8 @@ import { THEME } from '../constants';
 const { TRANSITION_ALL } = THEME;
 
 const NewPaletteButton = styled(Button)`
+  margin-top: 1rem;
+
   :active,
   :focus,
   :hover {

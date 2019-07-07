@@ -41,7 +41,9 @@ class PaletteFormMeta extends Component {
   };
 
   render() {
+    const { location } = this.props;
     const { emoji, open, paletteName, stage } = this.state;
+
     let title = 'Save Palette';
     let content = 'Give your palette a name and emoji to remember it by.';
 
@@ -95,6 +97,14 @@ class PaletteFormMeta extends Component {
       content = `${paletteName} ${emoji && emoji.native}`;
     }
 
+    let to = `/`;
+    if (location && location.state && location.state.fromPalette) {
+      to = location.pathname
+        .split('/')
+        .slice(0, -1)
+        .join('/');
+    }
+
     return (
       <div
         style={{
@@ -104,7 +114,7 @@ class PaletteFormMeta extends Component {
           width: '100%'
         }}
       >
-        <Link style={{ marginRight: '1rem' }} to={`/`}>
+        <Link style={{ marginRight: '1rem' }} to={to}>
           <Button color={'secondary'} variant={'contained'}>
             Go Back
           </Button>

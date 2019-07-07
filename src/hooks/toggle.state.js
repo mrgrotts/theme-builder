@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const SnackbarState = initialState => {
+export const ToggleState = initialState => {
   const [open, setOpen] = useState(initialState);
 
   const onOpen = status => setOpen(status);

@@ -66,6 +66,7 @@ export const Button = styled.button.attrs(props => ({
   padding: ${props => props.size.padding};
   position: relative;
   text-align: center;
+  text-transform: uppercase;
   ${TRANSITION_ALL};
   user-select: none;
   white-space: nowrap;
