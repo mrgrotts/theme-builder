@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { Route } from 'react-router-dom';
 
 import AnimatedRouter from './hoc/AnimatedRouter';
@@ -7,47 +7,37 @@ import PaletteForm from './pages/PaletteForm';
 import PaletteColor from './pages/PaletteColor';
 import PaletteList from './pages/PaletteList';
 
-import { generatePalette, seedPalettes } from './utils';
+import Store from './context';
+import { generatePalette } from './utils';
 import { MAX_COLORS } from './constants';
 
 const App = props => {
-  const initialState = JSON.parse(window.localStorage.getItem('palettes')) || seedPalettes;
-  const [palettes, setPalettes] = useState(initialState);
+  const [state, dispatch] = useContext(Store);
+  const { palettes } = state;
 
   const defaultPalette = generatePalette(palettes[4]);
 
   const getPalette = id => generatePalette(palettes.find(palette => palette.id === id));
 
-  const savePalette = palette => {
-    setPalettes([...palettes, palette]);
-    syncLocalStorage();
-  };
-
-  const deletePalette = id => {
-    setPalettes(palettes.filter(palette => palette.id !== id));
-    syncLocalStorage();
-  };
+  const savePalette = palette => dispatch({ type: 'SAVE_PALETTE', palette });
 
   const updatePalette = (paletteId, color) => {
-    const update = palettes => {
-      for (let palette in palettes) {
-        if (palettes[palette].id === paletteId) {
-          palettes[palette].colors = palettes[palette].colors.map(col =>
-            col.name.toLowerCase() === color.id.toLowerCase()
-              ? { name: color.name, color: color.hex }
-              : col
-          );
-        }
+    const palette = palettes.find(palette => palette.id === paletteId);
+    // console.log('new palette: ', palette);
 
-        return palettes;
+    palette.colors = palette.colors.map(col => {
+      if (col.name.toLowerCase() === color.id.toLowerCase()) {
+        // console.log('old and new color: ', col, color.name);
+        return { name: color.name, color: color.hex };
+      } else {
+        return col;
       }
-    };
+    });
 
-    setPalettes(update(palettes));
-    syncLocalStorage();
+    dispatch({ type: 'UPDATE_PALETTE', palette });
   };
 
-  const syncLocalStorage = () => window.localStorage.setItem('palettes', JSON.stringify(palettes));
+  const deletePalette = id => dispatch({ type: 'DELETE_PALETTE', id });
 
   return (
     <AnimatedRouter>

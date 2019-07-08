@@ -37,21 +37,14 @@ const Palette = ({ palette, updatePalette }) => {
   const [level, onChangeLevel] = StorageState('level', 500);
   const [toggled, OnToggle] = ToggleState(false);
 
-  const onChange = (event, reason) => {
-    onChangeFormat(event.target.value);
-
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    OnToggle(true);
-  };
+  const onChange = (event, reason) => onChangeFormat(event.target.value);
 
   const onClick = (event, reason, color) => {
     if (reason === 'clickaway') {
       return;
     }
 
+    console.log('fired onClick');
     OnToggle(true);
     onCurrentDialog(color);
   };
@@ -66,7 +59,7 @@ const Palette = ({ palette, updatePalette }) => {
   };
 
   const onSave = (event, value) => {
-    event.preventDefault();
+    // event.preventDefault();
     console.log('fired onSave: ', value, current);
     let color = current;
     color.name = value;

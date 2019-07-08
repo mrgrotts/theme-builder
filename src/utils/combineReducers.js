@@ -1,12 +1,14 @@
-// https://codesandbox.io/s/rm7587n34m?from-embed
-export const combineReducers = reducers => (state, action) => {
-  let hasChanged;
+// https://www.robinwieruch.de/redux-with-react-hooks/
 
-  const nextState = Object.keys(reducers).reduce((result, key) => {
-    result[key] = reducers[key](state[key], action);
-    hasChanged = hasChanged || result[key] !== state[key];
-    return result;
-  }, {});
+export const combineReducers = reducers => {
+  const keys = Object.keys(reducers);
 
-  return hasChanged ? nextState : state;
+  const store = keys.reduce(
+    (state, reducer) => ({ ...state, [reducer]: reducers[reducer][0] }),
+    {}
+  );
+
+  const dispatch = action => keys.map(key => reducers[key][1]).forEach(fn => fn(action));
+
+  return [store, dispatch];
 };

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 
-const store = window.localStorage;
+const storage = window.localStorage;
 
 export const StorageState = (key, initialValue) => {
   const [state, setState] = useState(() => {
     let value;
 
     try {
-      value = JSON.parse(store.getItem(key) || String(initialValue));
+      value = JSON.parse(storage.getItem(key) || String(initialValue));
     } catch (error) {
       value = initialValue;
     }
@@ -15,7 +15,9 @@ export const StorageState = (key, initialValue) => {
     return value;
   });
 
-  useEffect(() => store.setItem(key, JSON.stringify(state)), [state]);
+  useEffect(() => storage.setItem(key, JSON.stringify(state)), [key, state]);
 
-  return [state, setState];
+  const reset = () => storage.setItem(key, initialValue);
+
+  return [state, setState, reset];
 };

@@ -10,9 +10,9 @@ import PaletteFormMetaModal from './PaletteFormMetaModal';
 import { InputState, StorageState, ToggleState } from '../hooks';
 
 const PaletteFormMeta = ({ location, onSave, palettes }) => {
-  const [emoji, onSetEmoji] = StorageState('emoji', '');
-  const [name, onSetName] = InputState('');
-  const [stage, onSetStage] = StorageState('stage', 'form');
+  const [emoji, onSetEmoji, resetEmoji] = StorageState('emoji', null);
+  const [name, onSetName, resetName] = InputState('');
+  const [stage, onSetStage, resetStage] = StorageState('stage', 'form');
   const [toggled, OnToggle] = ToggleState(false);
 
   let title = 'Save Palette';
@@ -39,6 +39,9 @@ const PaletteFormMeta = ({ location, onSave, palettes }) => {
   const onSavePalette = () => {
     console.log(name, stage, emoji);
     onSave(emoji, name);
+    resetEmoji();
+    resetName();
+    resetStage();
     onClose();
   };
 

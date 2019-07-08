@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 
 import Button from '@material-ui/core/Button';
@@ -9,8 +9,6 @@ import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 
-import { arrayMove } from 'react-sortable-hoc';
-
 import Draggable from '../hoc/Draggable';
 import ColorPicker from '../components/ColorPicker';
 import DraggableBox from '../components/DraggableBox';
@@ -18,9 +16,10 @@ import Layout from '../components/Layout';
 import PaletteFormToolBar from '../components/PaletteFormToolBar';
 
 import { DRAWER_WIDTH } from '../constants';
-import { StorageState, ToggleState } from '../hooks';
+import Store from '../context';
+import { ToggleState } from '../hooks';
 import { Main, MobileFirstMediaQuery, Nav, PaletteColumns, Typography } from '../theme';
-import { randomColor, seedPalettes } from '../utils';
+import { arrayMove, randomColor } from '../utils';
 
 const screenWidth = window.innerWidth < DRAWER_WIDTH ? window.innerWidth : DRAWER_WIDTH;
 
@@ -118,28 +117,22 @@ const Palette = styled.div.attrs(props => ({
 `;
 
 const PaletteForm = ({ history, location, maxColors, palette, palettes, savePalette }) => {
-  if (!palette) {
-    palette = seedPalettes[0];
-  }
-
-  if (!palette.colors) {
-    palette.colors = [];
-  }
-
-  const [colors, onSetColors] = StorageState('colors', palette.colors);
   const [toggled, OnToggle] = ToggleState(false);
+  const [state, dispatch] = useContext(Store);
+  let { colors } = state;
+
   const full = colors.length >= maxColors;
 
-  const onAddColor = color => onSetColors([...colors, color]);
+  const onAddColor = color => dispatch({ type: 'ADD_COLOR', color });
 
   const onAddRandomColor = () => {
-    const random = randomColor(palettes, colors);
-    onSetColors([...colors, random]);
+    const color = randomColor(palettes, colors);
+    dispatch({ type: 'ADD_COLOR', color });
   };
 
-  const onClear = () => onSetColors([]);
+  const onClear = () => dispatch({ type: 'CLEAR_COLORS' });
 
-  const onDelete = name => onSetColors(colors.filter(color => color.name !== name));
+  const onDelete = name => dispatch({ type: 'DELETE_COLOR', name });
 
   const onDrawerOpen = () => OnToggle(true);
 
@@ -154,7 +147,8 @@ const PaletteForm = ({ history, location, maxColors, palette, palettes, savePale
     history.push('/');
   };
 
-  const onSortEnd = ({ oldIndex, newIndex }) => onSetColors(arrayMove(colors, oldIndex, newIndex));
+  const onSortEnd = ({ oldIndex, newIndex }) =>
+    dispatch({ type: 'SET_COLORS', colors: arrayMove(colors, oldIndex, newIndex) });
 
   let colindex = 0;
   const renderedColors = colors.map(({ color, name }, index) => {

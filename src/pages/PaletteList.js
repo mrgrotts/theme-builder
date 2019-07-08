@@ -37,10 +37,10 @@ const NavBarTitle = styled.h1.attrs(props => ({
 `;
 
 const PaletteList = ({ deletePalette, history, palettes }) => {
-  const [open, onToggleDialog] = ToggleState(false);
+  const [toggled, onToggle] = ToggleState(false);
   const [current, onCurrentDialog] = StorageState('current', null);
 
-  const onToggle = () => onToggleDialog();
+  const onToggleDialog = () => onToggle(!toggled);
 
   const onDelete = (event, id) => {
     event.stopPropagation();
@@ -97,10 +97,10 @@ const PaletteList = ({ deletePalette, history, palettes }) => {
         current={current}
         cta={'Delete'}
         id={'delete-palette-dialog'}
-        open={open}
+        open={toggled}
         message={`Delete Palette?`}
         onConfirm={deletePalette}
-        onToggle={onToggle}
+        onToggle={onToggleDialog}
       />
     </Layout>
   );

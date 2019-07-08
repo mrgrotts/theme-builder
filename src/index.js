@@ -3,14 +3,17 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 
 import App from './App';
+import Root from './Root';
 import * as serviceWorker from './serviceWorker';
 import './theme/index.css';
 
 document.getElementById('root').setAttribute('role', 'application');
 ReactDOM.render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>,
+  <Root>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Root>,
   document.getElementById('root')
 );
 

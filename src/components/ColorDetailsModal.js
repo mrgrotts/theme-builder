@@ -43,7 +43,6 @@ const ColorDetailsModal = ({ boxId, clone, color, onClose, onSave, open, shades,
   const onChange = event => {
     if (event.type === 'change' || event.type === 'blur') {
       onInputChange(event);
-      onSave(event, value);
     }
   };
 
@@ -72,7 +71,6 @@ const ColorDetailsModal = ({ boxId, clone, color, onClose, onSave, open, shades,
       id={`color-name`}
       name={`colorName`}
       color={color.color}
-      onBlur={onChange}
       onChange={onChange}
       type={`text`}
       value={value}

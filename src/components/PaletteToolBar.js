@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Slider from './Slider';
-import { Select, MaterialSnackbar as Snackbar, MobileFirstMediaQuery } from '../theme';
+import { MaterialSnackbar as Snackbar, MobileFirstMediaQuery } from '../theme';
 
 const Toolbar = styled.div`
   align-items: center;
@@ -54,25 +54,9 @@ const PaletteToolBar = ({ format, level, onChange, onChangeLevel, onClose, toggl
     );
   }
 
-  let field = {
-    id: 'color-format',
-    name: 'Color Format',
-    type: 'select',
-    options: [
-      { value: 'hex', name: `HEX - #ffffff` },
-      { value: 'rgb', name: `RGB - rgb(255, 255, 255)` },
-      { value: 'rgba', name: `RGBA - rgba(255, 255, 255, 1)` },
-      { value: 'cmyk', name: `CMYK - cmyk(0,0,0,0)` }
-    ],
-    value: format
-  };
-
   return (
     <>
-      <Toolbar>
-        {slider}
-        <Select color={'#141414'} field={field} onChange={onChange} />
-      </Toolbar>
+      <Toolbar>{slider}</Toolbar>
       <Snackbar
         message={`Format Changed To: ${format.toUpperCase()}`}
         open={toggled}
