@@ -116,6 +116,21 @@ const Palette = styled.div.attrs(props => ({
   }
 `;
 
+// const DraggablePalette = Draggable(({ children, ...props }) => (
+//   <section
+//     style={{
+//       alignContent: 'start',
+//       display: 'flex',
+//       flexFlow: 'row wrap',
+//       height: '100vh',
+//       justifyContent: 'flex-start'
+//     }}
+//     {...props}
+//   >
+//     {children}
+//   </section>
+// ));
+
 const PaletteForm = ({ history, location, maxColors, palette, palettes, savePalette }) => {
   const [toggled, OnToggle] = ToggleState(false);
   const [state, dispatch] = useContext(Store);
@@ -225,6 +240,16 @@ const PaletteForm = ({ history, location, maxColors, palette, palettes, savePale
       </Draggable>
     </Palette>
   );
+
+  /* using HOC
+  const newPalette = (
+    <Palette toggled={toggled}>
+      <DraggablePalette axis={`xy`} columns={PaletteColumns} distance={20} onSortEnd={onSortEnd}>
+        {renderedColors}
+      </DraggablePalette>
+    </Palette>
+  );
+  */
 
   return (
     <Layout id={'new-palette'}>

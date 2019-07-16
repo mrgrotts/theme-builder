@@ -24,4 +24,18 @@ const Draggable = SortableContainer(
   )
 );
 
+export const withDraggable = Component =>
+  SortableContainer(({ children, columns, containerProps, ...rest }) => (
+    <Component aria-colcount={columns} {...containerProps}>
+      {children.map((child, index) => (
+        <DraggableElement
+          key={child.key}
+          element={child}
+          index={child.props.index || index}
+          {...rest}
+        />
+      ))}
+    </Component>
+  ));
+
 export default Draggable;
