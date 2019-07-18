@@ -19,21 +19,23 @@ const PaletteFormMetaModal = ({
   style,
   title
 }) => (
-  <Dialog
-    open={open}
-    onClose={onClose}
-    aria-labelledby={'form-dialog-title'}
-    PaperProps={PaperProps}
-  >
-    <DialogTitle id="form-dialog-title">{title}</DialogTitle>
-    <ValidatorForm onSubmit={onSubmit} style={style}>
-      <DialogContent>
-        <DialogContentText>{content}</DialogContentText>
-        {children}
-      </DialogContent>
-      <DialogActions>{actions}</DialogActions>
-    </ValidatorForm>
-  </Dialog>
+  <>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      aria-labelledby={'form-dialog-title'}
+      PaperProps={PaperProps}
+    >
+      <DialogTitle id="form-dialog-title">{title}</DialogTitle>
+      <ValidatorForm onSubmit={onSubmit} style={style}>
+        <DialogContent>
+          <DialogContentText>{content}</DialogContentText>
+          {children}
+        </DialogContent>
+        <DialogActions>{actions}</DialogActions>
+      </ValidatorForm>
+    </Dialog>
+  </>
 );
 
 export default PaletteFormMetaModal;

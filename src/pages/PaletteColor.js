@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 
 import BackBox from '../components/BackBox';
@@ -6,8 +6,10 @@ import SingleColorBox from '../components/SingleColorBox';
 import Layout from '../components/Layout';
 import PaletteToolBar from '../components/PaletteToolBar';
 
+import { Store } from '../context';
 import { StorageState, ToggleState } from '../hooks';
 import { Main, MobileFirstMediaQuery, Nav, PaletteColumns } from '../theme';
+import { generatePalette } from '../utils';
 
 const Color = styled.section.attrs(props => ({
   'aria-colcount': PaletteColumns,
@@ -29,9 +31,18 @@ const NavTitle = styled.h1.attrs(props => ({
   }
 `;
 
-const PaletteColor = ({ history, match, palette }) => {
+const PaletteColor = ({ history, match }) => {
+  const { palettes } = useContext(Store);
+
   const [format, onChangeFormat] = StorageState('format', 'hex');
   const [toggled, onToggle] = ToggleState(false);
+
+  let paletteId = palettes[4];
+  if (match.params.palette) {
+    paletteId = palettes.find(palette => palette.id === match.params.palette);
+  }
+
+  const palette = generatePalette(paletteId);
 
   const onChange = (event, reason) => {
     onChangeFormat(event.target.value);

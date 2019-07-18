@@ -51,9 +51,7 @@ const EditableModal = ({
           </fieldset>
           <div style={{ display: 'flex' }}>
             <EditLink to={to}>
-              <Button onClick={onClose} color={'primary'}>
-                Edit Palette
-              </Button>
+              <Button color={'primary'}>Edit Palette</Button>
             </EditLink>
           </div>
         </TitleContainer>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 
 import ColorBox from '../components/ColorBox';
@@ -6,8 +6,10 @@ import ColorDetailsModal from '../components/ColorDetailsModal';
 import Layout from '../components/Layout';
 import PaletteToolBar from '../components/PaletteToolBar';
 
+import { Store, Dispatch } from '../context';
 import { StorageState, ToggleState } from '../hooks';
 import { Main, MobileFirstMediaQuery, Nav, PaletteColumns } from '../theme';
+import { generatePalette } from '../utils';
 
 const NavBarTitle = styled.h1.attrs(props => ({
   role: 'heading'
@@ -31,11 +33,21 @@ const PaletteColors = styled.section.attrs(props => ({
   min-height: 100%;
 `;
 
-const Palette = ({ palette, updatePalette }) => {
-  const [current, onCurrentDialog] = StorageState('current', null);
+const Palette = ({ match }) => {
+  const { palettes } = useContext(Store);
+  const dispatch = useContext(Dispatch);
+
+  const [current, onCurrentDialog] = StorageState('currentColor', null);
   const [format, onChangeFormat] = StorageState('format', 'hex');
   const [level, onChangeLevel] = StorageState('level', 500);
   const [toggled, OnToggle] = ToggleState(false);
+
+  let rawPalette = palettes[4];
+  if (match.params.palette) {
+    rawPalette = palettes.find(palette => palette.id === match.params.palette);
+  }
+
+  const palette = generatePalette(rawPalette);
 
   const onChange = (event, reason) => onChangeFormat(event.target.value);
 
@@ -64,8 +76,21 @@ const Palette = ({ palette, updatePalette }) => {
     let color = current;
     color.name = value;
     console.log('saving: ', color);
-    updatePalette(palette.id, color);
+    updatePalette(color);
     // OnToggle(false);
+  };
+
+  const updatePalette = color => {
+    palette.colors = palette.colors.map(col => {
+      if (col.name.toLowerCase() === color.id.toLowerCase()) {
+        // console.log('old and new color: ', col, color.name);
+        return { name: color.name, color: color.hex };
+      } else {
+        return col;
+      }
+    });
+
+    dispatch({ type: 'UPDATE_PALETTE', palette });
   };
 
   const { colors, emoji, id, paletteName } = palette;
@@ -121,6 +146,7 @@ const Palette = ({ palette, updatePalette }) => {
           open={toggled}
           shades={`/palettes/${palette.id}/colors/${current.id}`}
           clone={`/palettes/${palette.id}/clone`}
+          update={`/palettes/${palette.id}/update`}
         />
       )}
     </Layout>

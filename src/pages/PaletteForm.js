@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, memo } from 'react';
 import styled from 'styled-components';
 
 import Button from '@material-ui/core/Button';
@@ -15,9 +15,9 @@ import DraggableBox from '../components/DraggableBox';
 import Layout from '../components/Layout';
 import PaletteFormToolBar from '../components/PaletteFormToolBar';
 
-import { DRAWER_WIDTH } from '../constants';
-import Store from '../context';
-import { ToggleState } from '../hooks';
+import { DRAWER_WIDTH, MAX_COLORS } from '../constants';
+import { Store, Dispatch } from '../context';
+import { StorageState, ToggleState } from '../hooks';
 import { Main, MobileFirstMediaQuery, Nav, PaletteColumns, Typography } from '../theme';
 import { arrayMove, randomColor } from '../utils';
 
@@ -116,7 +116,7 @@ const Palette = styled.div.attrs(props => ({
   }
 `;
 
-// const DraggablePalette = Draggable(({ children, ...props }) => (
+// const DraggablePalette = withDraggable(({ children, ...props }) => (
 //   <section
 //     style={{
 //       alignContent: 'start',
@@ -131,12 +131,20 @@ const Palette = styled.div.attrs(props => ({
 //   </section>
 // ));
 
-const PaletteForm = ({ history, location, maxColors, palette, palettes, savePalette }) => {
-  const [toggled, OnToggle] = ToggleState(false);
-  const [state, dispatch] = useContext(Store);
-  let { colors } = state;
+const PaletteForm = props => {
+  const { colors, palettes } = useContext(Store);
+  const dispatch = useContext(Dispatch);
 
-  const full = colors.length >= maxColors;
+  const [current, setCurrentPalette] = StorageState('currentPalette', null);
+  const [toggled, OnToggle] = ToggleState(false);
+
+  if (!current && props.location.state.fromPalette) {
+    let palette = palettes.find(palette => palette.id === props.match.params.palette);
+    setCurrentPalette(palette);
+    dispatch({ type: 'SET_COLORS', colors: palette.colors });
+  }
+
+  const full = colors.length >= MAX_COLORS;
 
   const onAddColor = color => dispatch({ type: 'ADD_COLOR', color });
 
@@ -159,11 +167,13 @@ const PaletteForm = ({ history, location, maxColors, palette, palettes, savePale
     const palette = { colors, emoji, id, paletteName };
 
     savePalette(palette);
-    history.push('/');
+    props.history.push('/');
   };
 
   const onSortEnd = ({ oldIndex, newIndex }) =>
     dispatch({ type: 'SET_COLORS', colors: arrayMove(colors, oldIndex, newIndex) });
+
+  const savePalette = palette => dispatch({ type: 'SAVE_PALETTE', palette });
 
   let colindex = 0;
   const renderedColors = colors.map(({ color, name }, index) => {
@@ -260,7 +270,7 @@ const PaletteForm = ({ history, location, maxColors, palette, palettes, savePale
           palettes={palettes}
           onSave={onSave}
           onDrawerOpen={onDrawerOpen}
-          location={location}
+          {...props}
         />
         <DrawerHeader />
       </Nav>
@@ -274,4 +284,4 @@ const PaletteForm = ({ history, location, maxColors, palette, palettes, savePale
   );
 };
 
-export default PaletteForm;
+export default memo(PaletteForm);

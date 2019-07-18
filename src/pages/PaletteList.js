@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import styled from 'styled-components';
@@ -7,6 +7,7 @@ import DeleteDialog from '../components/DeleteDialog';
 import Layout from '../components/Layout';
 import PaletteCard from '../components/PaletteCard';
 
+import { Store, Dispatch } from '../context';
 import { StorageState, ToggleState } from '../hooks';
 import { Button, List, Main, MobileFirstMediaQuery, Nav, PaletteListColumns } from '../theme';
 import { THEME } from '../constants';
@@ -36,9 +37,14 @@ const NavBarTitle = styled.h1.attrs(props => ({
   }
 `;
 
-const PaletteList = ({ deletePalette, history, palettes }) => {
+const PaletteList = ({ history }) => {
+  const { palettes } = useContext(Store);
+  const dispatch = useContext(Dispatch);
+
   const [toggled, onToggle] = ToggleState(false);
   const [current, onCurrentDialog] = StorageState('current', null);
+
+  const deletePalette = id => dispatch({ type: 'DELETE_PALETTE', id });
 
   const onToggleDialog = () => onToggle(!toggled);
 
@@ -51,29 +57,28 @@ const PaletteList = ({ deletePalette, history, palettes }) => {
   const renderPalettes = () => {
     let colindex = 0;
 
-    if (!palettes) {
-      palettes = [];
-    }
+    return (
+      palettes &&
+      palettes.map(palette => {
+        if (colindex === PaletteListColumns) {
+          colindex = 1;
+        } else {
+          colindex++;
+        }
 
-    return palettes.map(palette => {
-      if (colindex === PaletteListColumns) {
-        colindex = 1;
-      } else {
-        colindex++;
-      }
-
-      return (
-        <CSSTransition key={palette.id} classNames={`fade`} timeout={500}>
-          <PaletteCard
-            key={palette.id}
-            colindex={colindex}
-            onClick={() => toPalette(palette.id)}
-            onDelete={event => onDelete(event, palette.id)}
-            {...palette}
-          />
-        </CSSTransition>
-      );
-    });
+        return (
+          <CSSTransition key={palette.id} classNames={`fade`} timeout={500}>
+            <PaletteCard
+              key={palette.id}
+              colindex={colindex}
+              onClick={() => toPalette(palette.id)}
+              onDelete={event => onDelete(event, palette.id)}
+              {...palette}
+            />
+          </CSSTransition>
+        );
+      })
+    );
   };
 
   const toPalette = id => history.push(`/palettes/${id}`);

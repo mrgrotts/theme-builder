@@ -33,7 +33,17 @@ const Input = styled.input`
 
 const CopyColor = ({ boxId, color, onCopy }) => <Copy id={boxId} color={color} onCopy={onCopy} />;
 
-const ColorDetailsModal = ({ boxId, clone, color, onClose, onSave, open, shades, ...props }) => {
+const ColorDetailsModal = ({
+  boxId,
+  clone,
+  color,
+  onClose,
+  onSave,
+  open,
+  shades,
+  update,
+  ...props
+}) => {
   if (!open || !color) {
     return null;
   }
@@ -92,7 +102,7 @@ const ColorDetailsModal = ({ boxId, clone, color, onClose, onSave, open, shades,
       open={open}
       PaperProps={{ style: { minWidth: '20rem' } }}
       title={editableTitle}
-      pathname={clone}
+      pathname={update}
     >
       <Divider />
       <div style={{ display: 'flex', flexFlow: 'column nowrap', margin: '1rem 0' }}>

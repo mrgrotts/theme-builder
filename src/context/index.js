@@ -1,5 +1,4 @@
 import { createContext } from 'react';
 
-const Store = createContext();
-
-export default Store;
+export const Store = createContext();
+export const Dispatch = createContext();
