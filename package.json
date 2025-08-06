@@ -19,7 +19,7 @@
     "@material-ui/icons": "^4.0.0-rc.0",
     "@material-ui/styles": "^4.0.0-rc.0",
     "chroma-js": "^2.0.4",
-    "create-react-app": "^3.0.1",
+    "create-react-app": "^5.1.0",
     "emoji-mart": "^2.11.1",
     "polished": "^3.4.1",
     "prop-types": "^15.7.2",
@@ -29,7 +29,7 @@
     "react-dom": "^16.8.6",
     "react-material-ui-form-validator": "^2.0.9",
     "react-router-dom": "^5.0.1",
-    "react-scripts": "3.0.1",
+    "react-scripts": "5.0.1",
     "react-sortable-hoc": "^1.9.1",
     "react-transition-group": "^4.2.1",
     "styled-components": "^4.3.2"
